@@ -106,14 +106,14 @@ VF_animal_GPS_data_1_4 <- VF_animal_GPS_data_1_4 %>%
     VF_Fence = case_when(
     fencesID ==   "19000" ~ "fence1",
     fencesID ==   "1922f" ~ "fence2",
-    fencesID ==   "11eab" ~ "fence3",
-    .default ="deactive_VF3"))
+    fencesID ==   "11eab" ~ "fence3"))#,
+    #.default ="deactive_VF3"))
     
     
 No_VF_animal_GPS_data_1_4 <- No_VF_animal_GPS_data_1_4 %>% 
   mutate(VF_Fence = "noVF")
      
-    
+ unique(VF_animal_GPS_data_1_4$fencesID)   
 
 ##########################################################################################################
 #############                VF 1                 ########################################################
@@ -125,7 +125,11 @@ VF1 <- filter(VF_animal_GPS_data_1_4,
                             between(local_time, 
                                     ymd_hms('2020-10-21 14:55:00', tz="Australia/Adelaide"),
                                     ymd_hms('2020-10-25 10:50:00', tz="Australia/Adelaide"))) 
-VF1 <- VF1 %>% filter(VF_Fence == "fence1"  )
+#VF1 <- VF1 %>% filter(VF_Fence == "fence1"  ) # I don't think I can do do this because some entries have no fence
+VF1 <- VF1 %>% mutate(VF_Fence = "fence1")
+
+unique(VF1$fencesID)
+unique(VF1$VF_Fence)
 
 #early time to late time
 
@@ -135,7 +139,7 @@ VF1 <- VF1 %>% filter(VF_Fence == "fence1"  )
 min(VF1$local_time)
 max(VF1$local_time)
 unique(VF1$VF_Fence) #
-
+unique(VF1$fencesID)
 # VF1_sf <-
 #   st_as_sf(VF1,
 #            coords = c("gpsData.lng", "gpsData.lat"),
@@ -186,8 +190,8 @@ min(VF2$local_time)
 max(VF2$local_time)
 unique(VF2$VF_Fence) #
 
-VF2 <- VF2 %>% filter(VF_Fence == "fence2"  )
-
+#VF2 <- VF2 %>% filter(VF_Fence == "fence2"  )
+VF2 <- VF2 %>% mutate(VF_Fence = "fence2"  )
 
 ##########################################################################################################
 #############    assign the collar ID to animal ID  VF 2 ########################################################
@@ -227,7 +231,9 @@ VF3 <- filter(VF_animal_GPS_data_1_4,
 min(VF3$local_time)
 max(VF3$local_time)
 unique(VF3$VF_Fence) #
-VF3 <- VF3 %>% filter(VF_Fence == "fence3"  )
+#VF3 <- VF3 %>% filter(VF_Fence == "fence3"  )
+VF3 <- VF3 %>% mutate(VF_Fence = "fence3"  )
+
 #########################################################################################################
 #############    assign the collar ID to animal ID  VF 3 ########################################################
 ##########################################################################################################
@@ -266,8 +272,8 @@ min(VF_deactivation$local_time)
 max(VF_deactivation$local_time)
 unique(VF_deactivation$VF_Fence)
 
-VF_deactivation <- VF_deactivation %>% filter(VF_Fence == "deactive_VF3"  )
-
+#VF_deactivation <- VF_deactivation %>% filter(VF_Fence == "deactive_VF3"  )
+VF_deactivation <- VF_deactivation %>% mutate(VF_Fence = "deactive_VF3"  )
 
 #########################################################################################################
 #############    assign the collar ID to animal ID  deactivation ########################################################
@@ -285,8 +291,15 @@ NA_VF_deactivation <- filter(VF_deactivation,animal_ID == "NA")
 with(NA_VF_deactivation, table(date, deviceName))
 
 
+str(VF1)
+check <- rbind(VF1, 
+               VF2, 
+               VF3, 
+               VF_deactivation
+               )
 
-check <- rbind(VF1, VF2, VF3, VF_deactivation)
+
+
 
 ##########################################################################################################
 unique(No_VF_animal_GPS_data_1_4$deviceName)
