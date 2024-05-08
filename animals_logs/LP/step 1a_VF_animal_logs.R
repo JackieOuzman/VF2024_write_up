@@ -55,11 +55,41 @@ rm(list=ls()[! ls() %in% c("No_VF_animal_GPS_data_1_4","VF_animal_GPS_data_1_4")
 str(VF_animal_GPS_data_1_4)
 str(No_VF_animal_GPS_data_1_4)
 
+#format time and date clm from character to time
+VF_animal_GPS_data_1_4 <-
+  VF_animal_GPS_data_1_4 %>%
+  mutate(timeOfEvent = as.POSIXct(timeOfEvent, tz = "GMT", format = "%d/%m/%Y %H:%M"))
 VF_animal_GPS_data_1_4 <- VF_animal_GPS_data_1_4 %>% 
-  mutate(local_time =  ymd_hms(timeOfEvent, tz= "Australia/Adelaide"))
+  mutate(GMT = ymd_hms(timeOfEvent, tz = "GMT"))
+VF_animal_GPS_data_1_4 <- VF_animal_GPS_data_1_4 %>% 
+  mutate(local_time = with_tz(GMT, tz = "Australia/Adelaide"))
+## Add a clm for ID_jaxs
+VF_animal_GPS_data_1_4 <- VF_animal_GPS_data_1_4 %>% 
+  dplyr::mutate( ID_jaxs = row_number())
+VF_animal_GPS_data_1_4 <- VF_animal_GPS_data_1_4 %>% 
+  mutate(date = as.Date(local_time, tz= "Australia/Adelaide"),
+         DOY = yday(date))
 
+
+
+No_VF_animal_GPS_data_1_4 <-
+  No_VF_animal_GPS_data_1_4 %>%
+  mutate(timeOfEvent = as.POSIXct(timeOfEvent, tz = "GMT", format = "%d/%m/%Y %H:%M"))
 No_VF_animal_GPS_data_1_4 <- No_VF_animal_GPS_data_1_4 %>% 
-  mutate(local_time =  ymd_hms(timeOfEvent, tz= "Australia/Adelaide"))
+  mutate(GMT = ymd_hms(timeOfEvent, tz = "GMT"))
+No_VF_animal_GPS_data_1_4 <- No_VF_animal_GPS_data_1_4 %>% 
+  mutate(local_time = with_tz(GMT, tz = "Australia/Adelaide"))
+## Add a clm for ID_jaxs
+No_VF_animal_GPS_data_1_4 <- No_VF_animal_GPS_data_1_4 %>% 
+  dplyr::mutate( ID_jaxs = row_number())
+No_VF_animal_GPS_data_1_4 <- No_VF_animal_GPS_data_1_4 %>% 
+  mutate(date = as.Date(local_time, tz= "Australia/Adelaide"),
+         DOY = yday(date))
+
+
+
+
+
 
 
 ################################################################################
@@ -130,9 +160,8 @@ head(VF1)
 with(VF1, table(date, animal_ID))
 
 #the location of the NA
-NA_VF1_InclusionBord <- filter(VF1_InclusionBord,
-                                           animal_ID == "NA")
-with(NA_VF1_InclusionBord, table(date, collar_ID))
+NA_VF1 <- filter(VF1,animal_ID == "NA")
+with(NA_VF1, table(date, deviceName))
 
 
 
@@ -143,328 +172,136 @@ with(NA_VF1_InclusionBord, table(date, collar_ID))
 ##########################################################################################################
 
 
-VF2_InclusionBord <- filter(VF_week1_2_3_InclusionBord, 
-                            between(local_time, ymd_hms('2019-05-20 14:50:00', tz="Australia/Adelaide"),
-                                    ymd_hms('2019-05-23 08:30:00', tz="Australia/Adelaide")))
-min(VF2_InclusionBord$local_time)
-max(VF2_InclusionBord$local_time)
-unique(VF2_InclusionBord$event) #"InclusionBorder_m is no pulse or audio
+VF2 <- filter(VF_animal_GPS_data_1_4,
+                            between(
+                              local_time,
+                              ymd_hms('2020-10-25 10:50:00', tz = "Australia/Adelaide"),
+                              ymd_hms('2020-10-30 08:03:00', tz = "Australia/Adelaide")
+                            ))
+
+# activation_fence2 2020-10-25 10:50:00
+# activation_fence3 2020-10-30 08:03:00
+
+min(VF2$local_time)
+max(VF2$local_time)
+unique(VF2$VF_Fence) #
+
+VF2 <- VF2 %>% filter(VF_Fence == "fence2"  )
+
+
 ##########################################################################################################
-#############    assign the collar ID to animal ID  VF 21 ########################################################
+#############    assign the collar ID to animal ID  VF 2 ########################################################
 ##########################################################################################################
-VF2_InclusionBord <- mutate(VF2_InclusionBord,
-                                        animal_ID = case_when(
-                                          collar_ID == "ac138" ~ "Q46",
-                                          collar_ID == "ac187" ~ "Q36",
-                                          collar_ID == "ac204" ~ "Q108",
-                                          collar_ID == "ac207" ~ "Q42",
-                                          collar_ID == "ac212" ~ "Q29",
-                                          collar_ID == "ac213" &
-                                            between(local_time, ymd_hms('2019-05-20 10:15:00', tz="Australia/Adelaide"),
-                                                    ymd_hms('2019-05-28 06:44:00', tz="Australia/Adelaide")) ~ "Q47",
-                                          collar_ID == "ac320" &
-                                            between(local_time, ymd_hms('2019-05-28 11:01:00', tz="Australia/Adelaide"),
-                                                    ymd_hms('2019-06-06 17:27:00', tz="Australia/Adelaide")) ~ "Q47" ,
-                                          collar_ID == "ac217" ~ "Q27",
-                                          collar_ID == "ac218" ~ "Q2",
-                                          collar_ID == "ac219" &
-                                            between(local_time, ymd_hms('2019-05-20 10:15:00', tz="Australia/Adelaide"),
-                                                    ymd_hms('2019-05-25 11:10:00', tz="Australia/Adelaide"))~ "Q10",
-                                          collar_ID == "ac220" &
-                                            between(local_time, ymd_hms('2019-05-25 11:01:00', tz="Australia/Adelaide"),
-                                                    ymd_hms('2019-06-06 17:27:18', tz="Australia/Adelaide"))~ "Q10",
-                                          collar_ID == "ac325" ~ "Q9",
-                                          collar_ID == "ac328" ~ "Q109",
-                                          collar_ID == "ac331" ~ "Q51",
-                                          collar_ID == "ad1945" ~ "Q28",
-                                          collar_ID == "ad2042" ~ "Q26",
-                                          collar_ID == "ad2043" ~ "Q75",
-                                          collar_ID == "ad3374" ~ "Q11",
-                                          collar_ID == "ad3396"  &
-                                            between(local_time, ymd_hms('2019-05-20 10:15:00', tz="Australia/Adelaide"),
-                                                    ymd_hms('2019-05-27 16:19:00', tz="Australia/Adelaide"))~ "Q45",
-                                          collar_ID == "ac209"  &
-                                            between(local_time, ymd_hms('2019-05-28 11:11:00', tz="Australia/Adelaide"),
-                                                    ymd_hms('2019-06-06 17:00:00', tz="Australia/Adelaide"))~ "Q45",
-                                          collar_ID == "ad3471" ~ "Q15",
-                                          collar_ID == "ad3502" ~ "Q8",
-                                          collar_ID == "ad3925" ~ "Q110",
-                                          TRUE ~ "NA"))
+unique(VF2$deviceName)
+## all VF2 device names match neckband number in animal wt dataset = no need to change anything 20cows
+
+
+
+VF2 <-VF2 %>%  mutate(animal_ID = deviceName) 
 
 #check we are assignining all the collar ID to animal names
-head(VF2_InclusionBord)
-with(VF2_InclusionBord, table(date, animal_ID))
+head(VF2)
+with(VF2, table(date, animal_ID))
 
 #the location of the NA
-NA_VF2_InclusionBord <- filter(VF2_InclusionBord,
-                               animal_ID == "NA")
-with(NA_VF2_InclusionBord, table(date, collar_ID))
+NA_VF2 <- filter(VF2,animal_ID == "NA")
+with(NA_VF2, table(date, deviceName))
+
+
+
 
 ##########################################################################################################
 #############                VF 3                 ########################################################
 ##########################################################################################################
 
+VF3 <- filter(VF_animal_GPS_data_1_4,
+              between(
+                local_time,
+                ymd_hms('2020-10-30 08:03:00', tz = "Australia/Adelaide"),
+                ymd_hms('2020-11-03 11:56:00', tz = "Australia/Adelaide")
+              ))
 
-VF3_InclusionBord <- filter(VF_week1_2_3_InclusionBord, 
-                            between(local_time, ymd_hms('2019-05-23 08:30:00', tz="Australia/Adelaide"),
-                                    ymd_hms('2019-05-28 11:00:00', tz="Australia/Adelaide")))
-min(VF3_InclusionBord$local_time)
-max(VF3_InclusionBord$local_time)
-unique(VF3_InclusionBord$event) #"InclusionBorder_m is no pulse or audio
+# activation_fence3 2020-10-30 08:03:00
+#deactivation_fence4 2020-11-03 11:56:00
 
-VF3_InclusionBord <- mutate(VF3_InclusionBord,
-                                        animal_ID = case_when(
-                                          collar_ID == "ac138" ~ "Q46",
-                                          collar_ID == "ac187" ~ "Q36",
-                                          collar_ID == "ac204" ~ "Q108",
-                                          collar_ID == "ac207" ~ "Q42",
-                                          collar_ID == "ac212" ~ "Q29",
-                                          collar_ID == "ac213" &
-                                            between(local_time, ymd_hms('2019-05-20 10:15:00', tz="Australia/Adelaide"),
-                                                    ymd_hms('2019-05-28 06:44:00', tz="Australia/Adelaide")) ~ "Q47",
-                                          collar_ID == "ac320" &
-                                            between(local_time, ymd_hms('2019-05-28 11:01:00', tz="Australia/Adelaide"),
-                                                    ymd_hms('2019-06-06 17:27:00', tz="Australia/Adelaide")) ~ "Q47" ,
-                                          collar_ID == "ac217" ~ "Q27",
-                                          collar_ID == "ac218" ~ "Q2",
-                                          collar_ID == "ac219" &
-                                            between(local_time, ymd_hms('2019-05-20 10:15:00', tz="Australia/Adelaide"),
-                                                    ymd_hms('2019-05-25 11:10:00', tz="Australia/Adelaide"))~ "Q10",
-                                          collar_ID == "ac220" &
-                                            between(local_time, ymd_hms('2019-05-25 11:01:00', tz="Australia/Adelaide"),
-                                                    ymd_hms('2019-06-06 17:27:18', tz="Australia/Adelaide"))~ "Q10",
-                                          collar_ID == "ac325" ~ "Q9",
-                                          collar_ID == "ac328" ~ "Q109",
-                                          collar_ID == "ac331" ~ "Q51",
-                                          collar_ID == "ad1945" ~ "Q28",
-                                          collar_ID == "ad2042" ~ "Q26",
-                                          collar_ID == "ad2043" ~ "Q75",
-                                          collar_ID == "ad3374" ~ "Q11",
-                                          collar_ID == "ad3396"  &
-                                            between(local_time, ymd_hms('2019-05-20 10:15:00', tz="Australia/Adelaide"),
-                                                    ymd_hms('2019-05-27 16:19:00', tz="Australia/Adelaide"))~ "Q45",
-                                          collar_ID == "ac209"  &
-                                            between(local_time, ymd_hms('2019-05-28 11:11:00', tz="Australia/Adelaide"),
-                                                    ymd_hms('2019-06-06 17:00:00', tz="Australia/Adelaide"))~ "Q45",
-                                          collar_ID == "ad3471" ~ "Q15",
-                                          collar_ID == "ad3502" ~ "Q8",
-                                          collar_ID == "ad3925" ~ "Q110",
-                                          TRUE ~ "NA"))
+min(VF3$local_time)
+max(VF3$local_time)
+unique(VF3$VF_Fence) #
+VF3 <- VF3 %>% filter(VF_Fence == "fence3"  )
+#########################################################################################################
+#############    assign the collar ID to animal ID  VF 3 ########################################################
+##########################################################################################################
+unique(VF3$deviceName)
+## all VF3 device names match neckband number in animal wt dataset = no need to change anything 20cows
+VF3 <-VF3 %>%  mutate(animal_ID = deviceName) 
 
 #check we are assignining all the collar ID to animal names
-head(VF3_InclusionBord)
-with(VF3_InclusionBord, table(date, animal_ID))
+head(VF3)
+with(VF3, table(date, animal_ID))
 
 #the location of the NA
-NA_VF3_InclusionBord <- filter(VF3_InclusionBord,
-                                           animal_ID == "NA")
-with(NA_VF3_InclusionBord, table(date, collar_ID))
+NA_VF3 <- filter(VF3,animal_ID == "NA")
+with(NA_VF3, table(date, deviceName))
+
 
 
 
 ##########################################################################################################
-#############                VF 4                 ########################################################
+#############                VF deactivation                 ########################################################
 ##########################################################################################################
 
 
-#Fence 4 called bron next training fence check that the local_time range is working
-VF4_InclusionBord <- filter(VF_week1_2_3_InclusionBord, 
-                            between(local_time, ymd_hms('2019-05-28 11:15:00', tz="Australia/Adelaide"),
-                                    ymd_hms('2019-06-03 09:30:00', tz="Australia/Adelaide")))
 
-min(VF4_InclusionBord$local_time)
-max(VF4_InclusionBord$local_time)
-unique(VF4_InclusionBord$event)
+VF_deactivation <- filter(VF_animal_GPS_data_1_4,
+              between(
+                local_time,
+                ymd_hms('2020-11-03 11:56:00', tz = "Australia/Adelaide"),
+                ymd_hms('2020-11-09 09:00:00', tz = "Australia/Adelaide")
+              ))
 
-VF4_InclusionBord <- mutate(VF4_InclusionBord,
-                                        animal_ID = case_when(
-                                          collar_ID == "ac138" ~ "Q46",
-                                          collar_ID == "ac187" ~ "Q36",
-                                          collar_ID == "ac204" ~ "Q108",
-                                          #collar_ID == "ac220" ~ "Q108", # replaced with 220 on the 28th
-                                          collar_ID == "ac207" ~ "Q42",
-                                          collar_ID == "ac212" ~ "Q29",
-                                          collar_ID == "ac213" &
-                                            between(local_time, ymd_hms('2019-05-20 10:15:00', tz="Australia/Adelaide"),
-                                                    ymd_hms('2019-05-28 06:44:00', tz="Australia/Adelaide")) ~ "Q47",
-                                          collar_ID == "ac320" &
-                                            between(local_time, ymd_hms('2019-05-28 11:01:00', tz="Australia/Adelaide"),
-                                                    ymd_hms('2019-06-06 17:27:00', tz="Australia/Adelaide")) ~ "Q47" ,
-                                          collar_ID == "ac217" ~ "Q27",
-                                          collar_ID == "ac218" ~ "Q2",#problem with battery on unit
-                                          collar_ID == "ac219" &
-                                            between(local_time, ymd_hms('2019-05-20 10:15:00', tz="Australia/Adelaide"),
-                                                    ymd_hms('2019-05-25 11:10:00', tz="Australia/Adelaide"))~ "Q10",
-                                          collar_ID == "ac220" &
-                                            between(local_time, ymd_hms('2019-05-25 11:01:00', tz="Australia/Adelaide"),
-                                                    ymd_hms('2019-06-06 17:27:18', tz="Australia/Adelaide"))~ "Q10",
-                                          collar_ID == "ac325" ~ "Q9",
-                                          collar_ID == "ac328" ~ "Q109",
-                                          collar_ID == "ac331" ~ "Q51",
-                                          collar_ID == "ad1945" ~ "Q28",
-                                          collar_ID == "ad2042" ~ "Q26",
-                                          collar_ID == "ad2043" ~ "Q75",
-                                          collar_ID == "ad3374" ~ "Q11",
-                                          collar_ID == "ad3396"  &
-                                            between(local_time, ymd_hms('2019-05-20 10:15:00', tz="Australia/Adelaide"),
-                                                    ymd_hms('2019-05-27 16:19:00', tz="Australia/Adelaide"))~ "Q45",
-                                          collar_ID == "ac209"  &
-                                            between(local_time, ymd_hms('2019-05-28 11:11:00', tz="Australia/Adelaide"),
-                                                    ymd_hms('2019-06-06 17:00:00', tz="Australia/Adelaide"))~ "Q45",
-                                          collar_ID == "ad3471" ~ "Q15",
-                                          collar_ID == "ad3502" ~ "Q8",
-                                          collar_ID == "ad3925" ~ "Q110",
-                                          TRUE ~ "NA"))
+#deactivation_fence4 2020-11-03 11:56:00
+#end of trial End of trail 2020-11-09 09:00:00 (not sure the exact time)? I will use this time?
+
+min(VF_deactivation$local_time)
+max(VF_deactivation$local_time)
+unique(VF_deactivation$VF_Fence)
+
+VF_deactivation <- VF_deactivation %>% filter(VF_Fence == "deactive_VF3"  )
+
+
+#########################################################################################################
+#############    assign the collar ID to animal ID  deactivation ########################################################
+##########################################################################################################
+unique(VF_deactivation$deviceName)
+## all VF_deactivation device names match neckband number in animal wt dataset = no need to change anything 20cows
+VF_deactivation <-VF_deactivation %>%  mutate(animal_ID = deviceName) 
 
 #check we are assignining all the collar ID to animal names
-head(VF4_InclusionBord)
-with(VF4_InclusionBord, table(date, animal_ID))
-with(VF4_InclusionBord, table(date, collar_ID))
+head(VF_deactivation)
+with(VF_deactivation, table(date, animal_ID))
 
-check <- rbind(VF1_InclusionBord, VF2_InclusionBord, VF3_InclusionBord, VF4_InclusionBord)
+#the location of the NA
+NA_VF_deactivation <- filter(VF_deactivation,animal_ID == "NA")
+with(NA_VF_deactivation, table(date, deviceName))
 
+
+
+check <- rbind(VF1, VF2, VF3, VF_deactivation)
+
+##########################################################################################################
+unique(No_VF_animal_GPS_data_1_4$deviceName)
+## all No_VF_animal_GPS_data_1_4 device names match neckband number in animal wt dataset = no need to change anything 20cows
+No_VF_animal_GPS_data_1_4 <-No_VF_animal_GPS_data_1_4 %>%  mutate(animal_ID = deviceName) 
 
 ##########################################################################################################
 ## save files ###
-saveRDS(VF1_InclusionBord,  "W:/VF/Optimising_VF/Eden Valley/data_prep/step1/VF1_InclusionBord.rds")
-saveRDS(VF2_InclusionBord,  "W:/VF/Optimising_VF/Eden Valley/data_prep/step1/VF2_InclusionBord.rds")
-saveRDS(VF3_InclusionBord,  "W:/VF/Optimising_VF/Eden Valley/data_prep/step1/VF3_InclusionBord.rds")
-saveRDS(VF4_InclusionBord,  "W:/VF/Optimising_VF/Eden Valley/data_prep/step1/VF4_InclusionBord.rds")
+saveRDS(VF1,              "W:/VF/2024/animal behaviour data/Long Plain/data_prep/VF1.rds")
+saveRDS(VF2,              "W:/VF/2024/animal behaviour data/Long Plain/data_prep/VF2.rds")
+saveRDS(VF3,              "W:/VF/2024/animal behaviour data/Long Plain/data_prep/VF3.rds")
+saveRDS(VF_deactivation,  "W:/VF/2024/animal behaviour data/Long Plain/data_prep/VF_deactivation.rds")
+
+saveRDS(No_VF_animal_GPS_data_1_4,  "W:/VF/2024/animal behaviour data/Long Plain/data_prep/No_VF_animal_GPS_data_1_4.rds")
 
 
 
-##########################################################################################################
-#####               VF 5   week 3  onwards                      ##########################################
-##########################################################################################################
 
-VF_week3_4_5_6_7_InclusionBord <- readRDS("W:/VF/Eden_Valley/logged_VF_data/updated collar logs/VF_week3_4_5_6_7.rds")
-dim(VF_week3_4_5_6_7_InclusionBord)
-unique(VF_week3_4_5_6_7_InclusionBord$event)
-
-################################################################################
-###                    Local local_time          #############
-################################################################################
-str(VF_week3_4_5_6_7_InclusionBord)
-
-VF_week3_4_5_6_7_InclusionBord <- VF_week3_4_5_6_7_InclusionBord %>% 
-  mutate(local_time =  ymd_hms(time, tz= "Australia/Adelaide"))
-
-
-################################################################################
-VF5_InclusionBord <- filter(VF_week3_4_5_6_7_InclusionBord, 
-                            between(local_time, ymd_hms('2019-06-03 09:31:00', tz="Australia/Adelaide"),
-                                    ymd_hms('2019-07-02 06:11:00', tz="Australia/Adelaide"))) #ends at 2019-06-06 23:59:56 ACST
-
-
-min(VF5_InclusionBord$local_time)
-max(VF5_InclusionBord$local_time)
-
-VF5_InclusionBord <- mutate(
-  VF5_InclusionBord,
-  animal_ID = case_when(
-    
-    collar_ID == "ac218" ~ "Q2", #missing a heap of these records for multiple days - note in file says its 'low power'
-    collar_ID == "ad2658" ~  "Q2",
-    
-    collar_ID == "ac204" ~ "Q108", #missing a heap of these records for multiple days - note in file says its 'low power'
-    collar_ID == "ad2637" ~ "Q108",
-    
-    collar_ID == "ad2042" ~ "Q26",
-    collar_ID == "ad2655" ~ "Q26",
-    #collar_ID == "ad2650" ~ "Q26", # the notes say this is cow75
-    collar_ID == "ad2643" ~ "Q26", # 
-    
-    collar_ID == "ac138" ~ "Q46",
-    collar_ID == "ac187" ~ "Q36",
-    
-    collar_ID == "ac207" ~ "Q42",
-    collar_ID == "ac212" ~ "Q29",
-    collar_ID == "ac213" &
-      between(
-        time,
-        as_datetime('2019-05-20 10:15:00', tz = "GMT"),
-        as_datetime('2019-05-28 07:00:00', tz = "GMT")
-      ) ~ "Q47",
-    #collar_ID == "ac320" &
-    #  between(time, as_datetime('2019-05-28 11:01:00', tz="GMT"),
-    #           as_datetime('2019-06-06 17:27:00', tz="GMT")) ~ "Q47" ,
-    collar_ID == "ac320" ~ "Q47",
-    collar_ID == "ac217" ~ "Q27",
-    
-    collar_ID == "ac219" &
-      between(
-        time,
-        as_datetime('2019-05-20 10:15:00', tz = "GMT"),
-        as_datetime('2019-05-25 11:10:00', tz =
-                      "GMT")
-      ) ~ "Q10",
-    collar_ID == "ac220" &
-      between(
-        time,
-        as_datetime('2019-05-25 10:55:00', tz = "GMT"),
-        as_datetime('2019-06-06 17:27:18', tz =
-                      "GMT")
-      ) ~ "Q10",
-    collar_ID == "ac325" ~ "Q9",
-    collar_ID == "ac328" ~ "Q109",
-    collar_ID == "ac331" ~ "Q51",
-    collar_ID == "ad1945" ~ "Q28",
-   
-    collar_ID == "ad2043" ~ "Q75",
-    collar_ID == "ad3374" ~ "Q11",
-    collar_ID == "ad3396"  &
-      between(
-        time,
-        as_datetime('2019-05-20 10:15:00', tz = "GMT"),
-        as_datetime('2019-05-27 16:25:00', tz =
-                      "GMT")
-      ) ~ "Q45",
-    collar_ID == "ac209"  &
-      between(
-        time,
-        as_datetime('2019-05-28 11:11:00', tz = "GMT"),
-        as_datetime('2019-06-06 17:00:00', tz =
-                      "GMT")
-      ) ~ "Q45",
-    collar_ID == "ad3471" ~ "Q15",
-    collar_ID == "ad3502" ~ "Q8",
-    collar_ID == "ad3925" ~ "Q110",
-    collar_ID == "ad2644" ~ "Q46",
-    collar_ID == "ad2640" ~ "Q36",
-    collar_ID == "ad2643" ~ "Q36",
-    
-    collar_ID == "ad2645" ~ "Q42",
-    collar_ID == "ad2649" ~ "Q29",
-    collar_ID == "ad2635" ~ "Q47",
-    collar_ID == "ad2638" ~ "Q27",
-    
-    collar_ID == "ad2647" ~ "Q10",
-    collar_ID == "ad2646" ~ "Q9",
-    collar_ID == "ad2648" ~ "Q109",
-    collar_ID == "ad2639" ~ "Q51",
-    collar_ID == "ad2656" ~ "Q28",
-    
-    collar_ID == "ad2653" ~ "Q75",
-    collar_ID == "ad2650" ~ "Q75", #who knows the notes are a mess - just follwing the notes
-    
-    collar_ID == "ad2634" ~ "Q11",
-    collar_ID == "ad2654" ~ "Q45",
-    collar_ID == "ad2651" ~ "Q15",
-    collar_ID == "ad2633" ~ "Q8",
-    collar_ID == "ad2657" ~ "Q110",
-    TRUE ~ "NA"
-  )
-)
-
-#check we are assignining all the collar ID to animal names
-head(VF5_InclusionBord)
-with(VF5_InclusionBord, table(date, animal_ID))
-
-#the location of the NA
-NA_VF5_InclusionBord <- filter(VF5_InclusionBord,
-                               animal_ID == "NA")
-with(NA_VF5_InclusionBord, table(date, collar_ID))
-
-
-
-saveRDS(VF5_InclusionBord,  "W:/VF/Optimising_VF/Eden Valley/data_prep/step1/VF5_InclusionBord.rds")
