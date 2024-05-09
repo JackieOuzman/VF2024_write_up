@@ -43,8 +43,8 @@ str(step1_2_VF1)
 
 ## Add a clm for ID_jaxs
 step1_2_VF1 <- step1_2_VF1 %>% 
-  dplyr::mutate( ID_jaxs = row_number()) %>% 
-  dplyr::mutate(fencesID = "VF1")
+  dplyr::mutate( ID_jaxs = row_number())# %>% 
+  #dplyr::mutate(fencesID = "VF1")
 
 
 step1_2_VF1 <- step1_2_VF1 %>% 
@@ -121,8 +121,8 @@ step1_2VF <- readRDS(paste0(path_step1, "VF2.rds"))
 
 ## Add a clm for ID_jaxs
 step1_2_VF <- step1_2VF %>% 
-  dplyr::mutate( ID_jaxs = row_number()) %>% 
-  dplyr::mutate(fencesID = "VF2")
+  dplyr::mutate( ID_jaxs = row_number())# %>% 
+ # dplyr::mutate(fencesID = "VF2")
 
 
 step1_2VF <- step1_2VF %>% 
@@ -203,8 +203,8 @@ step1_3VF <- readRDS(paste0(path_step1, "VF3.rds"))
 
 ## Add a clm for ID_jaxs
 step1_2_VF3 <- step1_3VF %>% 
-  dplyr::mutate( ID_jaxs = row_number()) %>% 
-  dplyr::mutate(fencesID = "VF3")
+  dplyr::mutate( ID_jaxs = row_number()) #%>% 
+  #dplyr::mutate(fencesID = "VF3")
 
 
 step1_2_VF3 <- step1_2_VF3 %>% 
@@ -282,8 +282,8 @@ step1_2_De_VF <-  readRDS(paste0(path_step1, "VF_deactivation.rds"))
 
 ## Add a clm for ID_jaxs
 step1_2_De_VF <- step1_2_De_VF %>% 
-  dplyr::mutate( ID_jaxs = row_number()) %>% 
-  dplyr::mutate(fencesID = "VF_deactivation")
+  dplyr::mutate( ID_jaxs = row_number()) #%>% 
+  #dplyr::mutate(fencesID = "VF_deactivation")
 
 
 step1_2_De_VF <- step1_2_De_VF %>% 
