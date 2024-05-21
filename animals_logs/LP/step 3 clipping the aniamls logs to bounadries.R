@@ -26,20 +26,26 @@ VF_fence_bound <- st_read("W:/VF/LongPlain/LP Blk Bound/LongPlainVF_bound.shp") 
 VF_fence_bound <-
   st_transform(VF_fence_bound, crs = 28354)
 
-
-
+#Test/ check#
+# str(Hard_fence_bound)
+# st_write(Hard_fence_bound, "W:/VF/2024/animal behaviour data/Long Plain/data_prep/checking_step3_VF1/Hard_fence_bound_GDA.shp")
+# st_write(Hard_fence_bound_VF, "W:/VF/2024/animal behaviour data/Long Plain/data_prep/checking_step3_VF1/Hard_fence_bound_VF_GDA.shp")
+# st_write(Hard_fence_bound_control, "W:/VF/2024/animal behaviour data/Long Plain/data_prep/checking_step3_VF1/Hard_fence_bound_control_GDA.shp")
 
 
 path_step1 <- "W:/VF/2024/animal behaviour data/Long Plain/data_prep/"
-
+path_step1 <- "W:/VF/2024/animal behaviour data/Long Plain/Raw data/Projected/"
 
 ################################################################
 ### Clip to the VF1 hard fences  with    #########
 ################################################################
 
 
-step1_2_VF1 <- readRDS(paste0(path_step1, "VF1.rds"))
+#step1_2_VF1 <- readRDS(paste0(path_step1, "VF1.rds"))
+step1_2_VF1 <- readRDS(paste0(path_step1, "VF1_step1_9370004.rds"))
 str(step1_2_VF1)
+
+
 
 ## Add a clm for ID_jaxs
 step1_2_VF1 <- step1_2_VF1 %>% 
@@ -53,21 +59,44 @@ step1_2_VF1 <- step1_2_VF1 %>%
 
 
 
+names(step1_2_VF1)
 
-
-#turn into spatial data
+#turn into spatial data when I project the data first and add x and y and save as CSV
 
 step1_2_VF1_sf <-
   st_as_sf(step1_2_VF1,
-           coords = c("gpsData.lng", "gpsData.lat"),
-           crs = 4326,
+           coords = c("xcoord", "ycoord"),
+           crs = 28354, #
            agr = "constant")
 
-GPS_sf_trans_VF1 <-
-  st_transform(step1_2_VF1_sf, crs = 28354)
+st_write(step1_2_VF1_sf, "W:/VF/2024/animal behaviour data/Long Plain/data_prep/checking_step3_VF1/step1_2_VF1_sf_project_first.shp")
+## this above step is fine
+
+GPS_sf_trans_VF1 <-step1_2_VF1_sf
 
 
-
+# #turn into spatial data
+# 
+# step1_2_VF1_sf <-
+#   st_as_sf(step1_2_VF1,
+#            coords = c("gpsData.lng", "gpsData.lat"),
+#            crs = 4326, #same as WGS84
+#            agr = "constant")
+# 
+# st_write(step1_2_VF1_sf, "W:/VF/2024/animal behaviour data/Long Plain/data_prep/checking_step3_VF1/step1_2_VF1_sf_WGS.shp")
+# ## this above step is fine
+# 
+# 
+# GPS_sf_trans_VF1 <-
+#   st_transform(step1_2_VF1_sf, crs = 28354)
+# 
+# GPS_sf_trans_VF1_a <-
+#   st_transform(step1_2_VF1_sf, crs = st_crs(28354)) #same result as above it out
+# 
+# 
+# st_write(GPS_sf_trans_VF1, "W:/VF/2024/animal behaviour data/Long Plain/data_prep/checking_step3_VF1/step1_2_VF1_GDA.shp")
+# st_write(GPS_sf_trans_VF1_a, "W:/VF/2024/animal behaviour data/Long Plain/data_prep/checking_step3_VF1/step1_2_VF1_a_GDA.shp")
+# 
 
 
 #To the large block boundary with buffer
@@ -103,7 +132,7 @@ GPS_sf_trans_VF1_clip_df <-   cbind(GPS_sf_trans_VF1_clip_df,coordinates )
 
 
 saveRDS(GPS_sf_trans_VF1_clip_df,  "W:/VF/2024/animal behaviour data/Long Plain/data_prep/VF1step3_clip.rds")
-
+write.csv(GPS_sf_trans_VF1_clip_df, "W:/VF/2024/animal behaviour data/Long Plain/Raw data/Projected/GPS_sf_trans_VF1_clip_df.csv")
 
 rm(list=ls()[! ls() %in% c("Hard_fence_bound","VF_fence_bound","Hard_fence_bound_VF",
                            "path_step1",

@@ -24,7 +24,7 @@ library(sf)
 # "W:\VF\2024\animal behaviour data\Long Plain\Raw data\csiro_weeklyexports_novf_ending_2020-11-16.csv"
 
 path_step1 <- "W:/VF/2024/animal behaviour data/Long Plain/data_prep/"
-raw_data <-   "W:/VF/2024/animal behaviour data/Long Plain/Raw data/"
+raw_data <-   "W:/VF/2024/animal behaviour data/Long Plain/Raw data/Projected/"
 
 
 No_VF_animal_GPS_data_1 <- read_csv(paste0(raw_data, "csiro_weeklyexports_novf_ending_2020-10-27.csv"))
@@ -32,7 +32,7 @@ No_VF_animal_GPS_data_2 <- read_csv(paste0(raw_data, "csiro_weeklyexports_novf_e
 No_VF_animal_GPS_data_3 <- read_csv(paste0(raw_data, "csiro_weeklyexports_novf_ending_2020-11-09.csv"))
 No_VF_animal_GPS_data_4 <- read_csv(paste0(raw_data, "csiro_weeklyexports_novf_ending_2020-11-16.csv"))
 
-VF_animal_GPS_data_1 <- read_csv(paste0(raw_data, "csiro_weeklyexports_ending_2020-10-26.csv"))
+VF_animal_GPS_data_1 <- read_csv(paste0(raw_data, "CSIRO_weekexport2020_10_26_GDA.csv"))
 VF_animal_GPS_data_2 <- read_csv(paste0(raw_data, "csiro_weeklyexports_ending_2020-11-02.csv"))
 VF_animal_GPS_data_3 <- read_csv(paste0(raw_data, "csiro_weeklyexports_ending_2020-11-09.csv"))
 #? not sure why this is a problem
@@ -48,7 +48,7 @@ VF_animal_GPS_data_1_4 <- rbind(VF_animal_GPS_data_1, VF_animal_GPS_data_2,
 
 rm(list=ls()[! ls() %in% c("No_VF_animal_GPS_data_1_4","VF_animal_GPS_data_1_4")])
 
-
+VF_animal_GPS_data_1_4 <- VF_animal_GPS_data_1
 ################################################################################
 ###                    Local local_time          #############
 ################################################################################
@@ -58,9 +58,9 @@ str(No_VF_animal_GPS_data_1_4)
 #format time and date clm from character to time
 VF_animal_GPS_data_1_4 <-
   VF_animal_GPS_data_1_4 %>%
-  mutate(timeOfEvent = as.POSIXct(timeOfEvent, tz = "GMT", format = "%d/%m/%Y %H:%M"))
+  mutate(timeOfEvent = as.POSIXct(timeOfEven, tz = "GMT", format = "%d/%m/%Y %H:%M"))
 VF_animal_GPS_data_1_4 <- VF_animal_GPS_data_1_4 %>% 
-  mutate(GMT = ymd_hms(timeOfEvent, tz = "GMT"))
+  mutate(GMT = ymd_hms(timeOfEven, tz = "GMT"))
 VF_animal_GPS_data_1_4 <- VF_animal_GPS_data_1_4 %>% 
   mutate(local_time = with_tz(GMT, tz = "Australia/Adelaide"))
 ## Add a clm for ID_jaxs
@@ -315,6 +315,8 @@ saveRDS(VF_deactivation,  "W:/VF/2024/animal behaviour data/Long Plain/data_prep
 
 saveRDS(No_VF_animal_GPS_data_1_4,  "W:/VF/2024/animal behaviour data/Long Plain/data_prep/No_VF_animal_GPS_data_1_4.rds")
 
+VF11_9370004 <- VF1 %>% filter(deviceName == 9370004)
 
-
+write.csv(VF11_9370004, "W:/VF/2024/animal behaviour data/Long Plain/Raw data/Projected/VF1_step1_9370004.csv")
+saveRDS(VF11_9370004,  "W:/VF/2024/animal behaviour data/Long Plain/Raw data/Projected/VF1_step1_9370004.rds")
 
