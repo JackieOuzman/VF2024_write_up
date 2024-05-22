@@ -25,13 +25,17 @@ library(sf)
 ##################################################################################
 GPS <- readRDS("W:/VF/2024/animal behaviour data/Long Plain/data_prep/VF1step3_clip.rds")
 
-
+str(GPS)
 #turn into spatial data
 GPS <-   st_as_sf(GPS,
                          coords = c("X", "Y"),
                          crs = 28354,
                          agr = "constant")
 names(GPS)
+
+GPS <- GPS %>%  rename(cumulativeAudioCount = cumulative ,
+                       cumulativeShockCount = cumulati_1)
+
 GPS <- GPS %>% dplyr::select (ID_jaxs, #got
                               animal_ID, #got
                               #time,
@@ -80,9 +84,7 @@ VF_fence_bound <-
   st_transform(VF_fence_bound, crs = 28354)
 
 
-# "W:/VF/2024/spatial/LP/VF1_Fence.shp"
-# "W:/VF/2024/spatial/LP/VF1_Graze.shp"
-# "W:/VF/2024/spatial/LP/VF1_NonGraze.shp"
+
 
 VF1_paddock <-   st_read("W:/VF/2024/spatial/LP/VF1_Graze.shp")
 VF1_exclusion_zone <- st_read("W:/VF/2024/spatial/LP/VF1_NonGraze.shp")
@@ -164,6 +166,10 @@ GPS <-   st_as_sf(GPS,
                   crs = 28354,
                   agr = "constant")
 names(GPS)
+GPS <- GPS %>%  rename(cumulativeAudioCount = cumulative ,
+                       cumulativeShockCount = cumulati_1)
+
+
 GPS <- GPS %>% dplyr::select (ID_jaxs, #got
                               animal_ID, #got
                               #time,
@@ -281,6 +287,9 @@ GPS <-   st_as_sf(GPS,
                   crs = 28354,
                   agr = "constant")
 names(GPS)
+GPS <- GPS %>%  rename(cumulativeAudioCount = cumulative ,
+                       cumulativeShockCount = cumulati_1)
+
 GPS <- GPS %>% dplyr::select (ID_jaxs, #got
                               animal_ID, #got
                               #time,
@@ -405,6 +414,9 @@ GPS <-   st_as_sf(GPS,
                   crs = 28354,
                   agr = "constant")
 names(GPS)
+GPS <- GPS %>%  rename(cumulativeAudioCount = cumulative ,
+                       cumulativeShockCount = cumulati_1)
+
 GPS <- GPS %>% dplyr::select (ID_jaxs, #got
                               animal_ID, #got
                               #time,
@@ -529,6 +541,9 @@ GPS <-   st_as_sf(GPS,
                   crs = 28354,
                   agr = "constant")
 names(GPS)
+GPS <- GPS %>%  rename(cumulativeAudioCount = cumulative ,
+                       cumulativeShockCount = cumulati_1)
+
 GPS <- GPS %>% dplyr::select (ID_jaxs, #got
                               animal_ID, #got
                               #time,
@@ -629,6 +644,7 @@ GPS_all_df <- GPS_all_df %>%
 names(GPS_all_df)
 GPS_all_df <-   cbind(GPS_all_df,coordinates )
 
+names(GPS_all_df)
 
 saveRDS(GPS_all_df,  "W:/VF/2024/animal behaviour data/Long Plain/data_prep/Control_step4.rds")
 
