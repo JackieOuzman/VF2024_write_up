@@ -270,7 +270,7 @@ rm(GPS_animal_reg_time_step9370004,
 
 
 GPS_animal_reg_time_step_all <- GPS_animal_reg_time_step_all %>% 
-  dplyr::mutate(Time_sheep = paste0(round_local_time,"_", sheep) )
+  dplyr::mutate(Time_sheep = paste0(round_local_time,"_", animal_ID) )
 
 unique(GPS_animal_reg_time_step_all$animal_ID)
 
