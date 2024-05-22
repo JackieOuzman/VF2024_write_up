@@ -34,15 +34,15 @@ VF_fence_bound <-
 
 
 path_step1 <- "W:/VF/2024/animal behaviour data/Long Plain/data_prep/"
-path_step1 <- "W:/VF/2024/animal behaviour data/Long Plain/Raw data/Projected/"
+
 
 ################################################################
 ### Clip to the VF1 hard fences  with    #########
 ################################################################
 
 
-#step1_2_VF1 <- readRDS(paste0(path_step1, "VF1.rds"))
-step1_2_VF1 <- readRDS(paste0(path_step1, "VF1_step1_9370004.rds"))
+step1_2_VF1 <- readRDS(paste0(path_step1, "VF1.rds"))
+#step1_2_VF1 <- readRDS(paste0(path_step1, "VF1_step1_9370004.rds"))
 str(step1_2_VF1)
 
 
@@ -69,34 +69,13 @@ step1_2_VF1_sf <-
            crs = 28354, #
            agr = "constant")
 
-st_write(step1_2_VF1_sf, "W:/VF/2024/animal behaviour data/Long Plain/data_prep/checking_step3_VF1/step1_2_VF1_sf_project_first.shp")
+#st_write(step1_2_VF1_sf, "W:/VF/2024/animal behaviour data/Long Plain/data_prep/checking_step3_VF1/step1_2_VF1_sf_project_first.shp")
 ## this above step is fine
 
 GPS_sf_trans_VF1 <-step1_2_VF1_sf
 
 
-# #turn into spatial data
-# 
-# step1_2_VF1_sf <-
-#   st_as_sf(step1_2_VF1,
-#            coords = c("gpsData.lng", "gpsData.lat"),
-#            crs = 4326, #same as WGS84
-#            agr = "constant")
-# 
-# st_write(step1_2_VF1_sf, "W:/VF/2024/animal behaviour data/Long Plain/data_prep/checking_step3_VF1/step1_2_VF1_sf_WGS.shp")
-# ## this above step is fine
-# 
-# 
-# GPS_sf_trans_VF1 <-
-#   st_transform(step1_2_VF1_sf, crs = 28354)
-# 
-# GPS_sf_trans_VF1_a <-
-#   st_transform(step1_2_VF1_sf, crs = st_crs(28354)) #same result as above it out
-# 
-# 
-# st_write(GPS_sf_trans_VF1, "W:/VF/2024/animal behaviour data/Long Plain/data_prep/checking_step3_VF1/step1_2_VF1_GDA.shp")
-# st_write(GPS_sf_trans_VF1_a, "W:/VF/2024/animal behaviour data/Long Plain/data_prep/checking_step3_VF1/step1_2_VF1_a_GDA.shp")
-# 
+
 
 
 #To the large block boundary with buffer
@@ -132,7 +111,12 @@ GPS_sf_trans_VF1_clip_df <-   cbind(GPS_sf_trans_VF1_clip_df,coordinates )
 
 
 saveRDS(GPS_sf_trans_VF1_clip_df,  "W:/VF/2024/animal behaviour data/Long Plain/data_prep/VF1step3_clip.rds")
-write.csv(GPS_sf_trans_VF1_clip_df, "W:/VF/2024/animal behaviour data/Long Plain/Raw data/Projected/GPS_sf_trans_VF1_clip_df.csv")
+# write.csv(GPS_sf_trans_VF1_clip_df, "W:/VF/2024/animal behaviour data/Long Plain/Raw data/Projected_test/GPS_sf_WED_VF1_clip_df.csv")
+# 
+# 
+# GPS_sf_trans_VF1_clip_df_9370004 <- GPS_sf_trans_VF1_clip_df %>% filter(animal_ID == 9370004)
+# write.csv(GPS_sf_trans_VF1_clip_df_9370004, "W:/VF/2024/animal behaviour data/Long Plain/Raw data/Projected_test/GPS_sf_WED_VF1_clip_df_9370004.csv")
+
 
 rm(list=ls()[! ls() %in% c("Hard_fence_bound","VF_fence_bound","Hard_fence_bound_VF",
                            "path_step1",
@@ -164,16 +148,16 @@ names(step1_2VF)
 
 #turn into spatial data
 step1_2VF <- step1_2VF %>% 
-  filter(!is.na(gpsData.lng))
+  filter(!is.na(xcoord))
 
 step1_2VF <-
   st_as_sf(step1_2VF,
-           coords = c("gpsData.lng", "gpsData.lat"),
-           crs = 4326,
+           coords = c("xcoord", "ycoord"),
+           crs = 28354,
            agr = "constant")
 
-GPS_sf_trans_VF2 <-
-  st_transform(step1_2VF, crs = 28354)
+GPS_sf_trans_VF2 <- step1_2VF
+  
 
 
 
@@ -246,16 +230,16 @@ names(step1_2_VF3)
 
 #turn into spatial data
 step1_2_VF3 <- step1_2_VF3 %>% 
-  filter(!is.na(gpsData.lng))
+  filter(!is.na(xcoord))
 
 step1_2_VF3 <-
   st_as_sf(step1_2_VF3,
-           coords = c("gpsData.lng", "gpsData.lat"),
-           crs = 4326,
+           coords = c("xcoord", "ycoord"),
+           crs = 28354,
            agr = "constant")
 
-GPS_sf_trans_VF3 <-
-  st_transform(step1_2_VF3, crs = 28354)
+GPS_sf_trans_VF3 <-step1_2_VF3
+ 
 
 
 
@@ -325,16 +309,16 @@ names(step1_2_De_VF)
 
 #turn into spatial data
 step1_2_De_VF <- step1_2_De_VF %>% 
-  filter(!is.na(gpsData.lng))
+  filter(!is.na(xcoord))
 
 step1_2_De_VF_sf <-
   st_as_sf(step1_2_De_VF,
-           coords = c("gpsData.lng", "gpsData.lat"),
-           crs = 4326,
+           coords = c("xcoord", "ycoord"),
+           crs = 28354,
            agr = "constant")
 
-GPS_sf_trans_De_VF <-
-  st_transform(step1_2_De_VF_sf, crs = 28354)
+GPS_sf_trans_De_VF <- step1_2_De_VF_sf
+  
 
 
 
@@ -407,18 +391,18 @@ glimpse(step1_2_control)
 ### remove missing values
 
 step1_2_control <- step1_2_control %>% 
-  filter(!is.na(gpsData.lng))
+  filter(!is.na(xcoord       ))
 
 #turn into spatial data
 
 step1_2_control_sf <-
   st_as_sf(step1_2_control,
-           coords = c("gpsData.lng", "gpsData.lat"),
-           crs = 4326,
+           coords = c("xcoord", "ycoord"),
+           crs = 28354,
            agr = "constant")
 
-GPS_sf_trans_control <-
-  st_transform(step1_2_control_sf, crs = 28354)
+GPS_sf_trans_control <-step1_2_control_sf
+  
 
 
 unique(Hard_fence_bound$VF_name)

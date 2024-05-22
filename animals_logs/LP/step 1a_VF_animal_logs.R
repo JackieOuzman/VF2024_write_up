@@ -13,54 +13,38 @@ library(sf)
 ########    bring in data  this is a massive mess and heaps of data ########################
 ############################################################################################
 
-# "W:\VF\2024\animal behaviour data\Long Plain\Raw data\csiro_weeklyexports_ending_2020-10-26.csv"
-# "W:\VF\2024\animal behaviour data\Long Plain\Raw data\csiro_weeklyexports_ending_2020-11-02.csv"
-# "W:\VF\2024\animal behaviour data\Long Plain\Raw data\csiro_weeklyexports_ending_2020-11-09.csv"
-# "W:\VF\2024\animal behaviour data\Long Plain\Raw data\csiro_weeklyexports_ending_2020-11-16.csv"
-
-# "W:\VF\2024\animal behaviour data\Long Plain\Raw data\csiro_weeklyexports_novf_ending_2020-10-27.csv"
-# "W:\VF\2024\animal behaviour data\Long Plain\Raw data\csiro_weeklyexports_novf_ending_2020-11-03.csv"
-# "W:\VF\2024\animal behaviour data\Long Plain\Raw data\csiro_weeklyexports_novf_ending_2020-11-09.csv"
-# "W:\VF\2024\animal behaviour data\Long Plain\Raw data\csiro_weeklyexports_novf_ending_2020-11-16.csv"
+## see Pre step1 use QGIS for projection script
 
 path_step1 <- "W:/VF/2024/animal behaviour data/Long Plain/data_prep/"
-raw_data <-   "W:/VF/2024/animal behaviour data/Long Plain/Raw data/Projected/"
+raw_data <-   "W:/VF/2024/animal behaviour data/Long Plain/Raw data/Projected_use/"
+               
+
+No_VF_animal_GPS_data_1_4 <- read_csv(paste0(raw_data, "No_VF_animal_GPS_data_1_4_GDA.csv"), 
+                                      col_types = cols(timeOfEven = col_datetime(format = " %Y/%m/%d %H:%M:%S")))
+VF_animal_GPS_data_1_4 <- read_csv(paste0(raw_data, "VF_animal_GPS_data_1_4_GDA.csv"),
+                                   col_types = cols(timeOfEven = col_datetime(format = " %Y/%m/%d %H:%M:%S")))
 
 
-No_VF_animal_GPS_data_1 <- read_csv(paste0(raw_data, "csiro_weeklyexports_novf_ending_2020-10-27.csv"))
-No_VF_animal_GPS_data_2 <- read_csv(paste0(raw_data, "csiro_weeklyexports_novf_ending_2020-11-03.csv"))
-No_VF_animal_GPS_data_3 <- read_csv(paste0(raw_data, "csiro_weeklyexports_novf_ending_2020-11-09.csv"))
-No_VF_animal_GPS_data_4 <- read_csv(paste0(raw_data, "csiro_weeklyexports_novf_ending_2020-11-16.csv"))
-
-VF_animal_GPS_data_1 <- read_csv(paste0(raw_data, "CSIRO_weekexport2020_10_26_GDA.csv"))
-VF_animal_GPS_data_2 <- read_csv(paste0(raw_data, "csiro_weeklyexports_ending_2020-11-02.csv"))
-VF_animal_GPS_data_3 <- read_csv(paste0(raw_data, "csiro_weeklyexports_ending_2020-11-09.csv"))
-#? not sure why this is a problem
-#VF_animal_GPS_data_3 <- read.csv("W:/VF/2024/animal behaviour data/Long Plain/Raw data/csiro_weeklyexports_ending_2020-11-09.csv")
-VF_animal_GPS_data_4 <- read_csv(paste0(raw_data, "csiro_weeklyexports_ending_2020-11-16.csv"))
 
 
-No_VF_animal_GPS_data_1_4 <- rbind(No_VF_animal_GPS_data_1, No_VF_animal_GPS_data_2,
-                                   No_VF_animal_GPS_data_3, No_VF_animal_GPS_data_4)
-
-VF_animal_GPS_data_1_4 <- rbind(VF_animal_GPS_data_1, VF_animal_GPS_data_2,
-                                   VF_animal_GPS_data_3, VF_animal_GPS_data_4)
-
-rm(list=ls()[! ls() %in% c("No_VF_animal_GPS_data_1_4","VF_animal_GPS_data_1_4")])
-
-VF_animal_GPS_data_1_4 <- VF_animal_GPS_data_1
 ################################################################################
 ###                    Local local_time          #############
 ################################################################################
 str(VF_animal_GPS_data_1_4)
 str(No_VF_animal_GPS_data_1_4)
 
+VF_animal_GPS_data_1_4 <- VF_animal_GPS_data_1_4 %>% rename(timeOfEvent = timeOfEven)
+No_VF_animal_GPS_data_1_4 <- No_VF_animal_GPS_data_1_4 %>% rename(timeOfEvent = timeOfEven)
+
+
 #format time and date clm from character to time
 VF_animal_GPS_data_1_4 <-
   VF_animal_GPS_data_1_4 %>%
-  mutate(timeOfEvent = as.POSIXct(timeOfEven, tz = "GMT", format = "%d/%m/%Y %H:%M"))
+  mutate(timeOfEvent = as.POSIXct(timeOfEvent, tz = "GMT", format = "%d/%m/%Y %H:%M"))
+
+
 VF_animal_GPS_data_1_4 <- VF_animal_GPS_data_1_4 %>% 
-  mutate(GMT = ymd_hms(timeOfEven, tz = "GMT"))
+  mutate(GMT = ymd_hms(timeOfEvent, tz = "GMT"))
 VF_animal_GPS_data_1_4 <- VF_animal_GPS_data_1_4 %>% 
   mutate(local_time = with_tz(GMT, tz = "Australia/Adelaide"))
 ## Add a clm for ID_jaxs
@@ -317,6 +301,6 @@ saveRDS(No_VF_animal_GPS_data_1_4,  "W:/VF/2024/animal behaviour data/Long Plain
 
 VF11_9370004 <- VF1 %>% filter(deviceName == 9370004)
 
-write.csv(VF11_9370004, "W:/VF/2024/animal behaviour data/Long Plain/Raw data/Projected/VF1_step1_9370004.csv")
-saveRDS(VF11_9370004,  "W:/VF/2024/animal behaviour data/Long Plain/Raw data/Projected/VF1_step1_9370004.rds")
+write.csv(VF11_9370004, "W:/VF/2024/animal behaviour data/Long Plain/Raw data/Projected_test/VF1_step1_9370004.csv")
+saveRDS(VF11_9370004,  "W:/VF/2024/animal behaviour data/Long Plain/Raw data/Projected_test/VF1_step1_9370004.rds")
 
