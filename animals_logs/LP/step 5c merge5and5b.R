@@ -46,6 +46,7 @@ step5b <- step5b %>%
 
 
 all_step5 <- left_join(step5, step5b)
+#unique(all_step5$date)
 saveRDS(all_step5,  "W:/VF/2024/animal behaviour data/Long Plain/data_prep/VF2_step5c.rds")
 
 rm(step5,step5b, all_step5)
