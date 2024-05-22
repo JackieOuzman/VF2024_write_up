@@ -203,7 +203,7 @@ for (animal_list in animal_list){
   }       
 
 
-print(animal_list$animal)
+
 
 #9370004
 # 9370088
@@ -269,8 +269,8 @@ GPS_animal_reg_time_step_all <- rbind(
 saveRDS(GPS_animal_reg_time_step_all,  "W:/VF/2024/animal behaviour data/Long Plain/data_prep/VF1_step5.rds")
 
 
-
-
+write.csv(GPS_animal_reg_time_step9370004,
+          "W:/VF/2024/animal behaviour data/Long Plain/data_prep/checking_step3_VF1/WED_GPS_animal_reg_time_step9370004.csv")
 
 
 
