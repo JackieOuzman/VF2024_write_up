@@ -18,7 +18,7 @@ library(sf)
 ################################################################################
 
 
-GPS_Dist <- readRDS("W:/VF/2024/animal behaviour data/Long Plain/data_prep/VF1step3_clip.rds")
+GPS_Dist <- readRDS("W:/VF/2024/animal behaviour data/Long Plain/data_prep/VF2step3_clip.rds")
 names(GPS_Dist)
 
 ### subset the data to the clms I want.
@@ -47,18 +47,18 @@ str(GPS_Dist)
 ################################################################################
 
 
-start <- min(GPS_Dist$local_time, na.rm = TRUE)  # "2020-10-21 14:57:00 ACDT"
-end <-   max(GPS_Dist$local_time, na.rm = TRUE) # "2020-10-25 10:47:16 ACDT"
+start <- min(GPS_Dist$local_time, na.rm = TRUE)  # "
+end <-   max(GPS_Dist$local_time, na.rm = TRUE) # 
 #Since we’re dealing with elapsed time between two dates, let’s start with Intervals. We can define an Interval using the %--% operator.
-start <- round_date(start, unit="10 mins") #2022-06-28 10:00:00 ACDT"
-end <- round_date(end, unit="10 mins") # "2022-07-02 10:10:00 ACDT"
+start <- round_date(start, unit="10 mins") #2020-10-30 10:00:00 ACDT"
+end <- round_date(end, unit="10 mins") # "2020-10-25 10:10:00 ACDT"
 
 time.interval <- start %--% end
 time.interval
 #To create a Duration between these two dates, we can use the as.duration function.
 
 time.duration <- as.duration(time.interval)
-time.duration # "330600s (~3.83 days)"
+time.duration # "421200s (~4.88 days)"
 
 ################################################################################
 #### --------------    make a regular time step   -------------- ####
@@ -174,39 +174,8 @@ for (animals_list in animals_list){
 
 
 
-# write.csv(GPS_animal_reg_time_step9370004, 
-#           paste0("W:/VF/2024/animal behaviour data/Long Plain/data_prep/checking_step3_VF1/WED_step5b_Greg_time_step_dist_travelled_withCue.csv"), 
-#           row.names=FALSE)
 
 
-
-
-#file_list <- data.frame(name_df = paste0("GPS_sheep_reg_time_step",c(1:6)))
-
-#9370004
-# 9370088
-# 9370123
-# 9380142
-
-# 9380144
-# 9380265
-# 9380268
-# 9380297
-
-# 9380384
-# 9380451
-# 9380455
-# 9380461
-
-# 9380477
-# 9380495
-# 9380591
-# 9380611
-
-# 9380713
-# 9380744
-# 9380754
-# 9380796
 
 
 
@@ -267,10 +236,10 @@ rm(GPS_animal_reg_time_step9370004,
    )
 
 
-
+names(GPS_animal_reg_time_step_all)
 
 GPS_animal_reg_time_step_all <- GPS_animal_reg_time_step_all %>% 
-  dplyr::mutate(Time_sheep = paste0(round_local_time,"_", sheep) )
+  dplyr::mutate(Time_animal = paste0(round_local_time,"_", animal_ID) )
 
 unique(GPS_animal_reg_time_step_all$animal_ID)
 
@@ -280,9 +249,7 @@ unique(GPS_animal_reg_time_step_all$animal_ID)
 
 
 
-# write.csv(GPS_animal_reg_time_step_all, 
-#           paste0(output_path,"/step5b_reg_time_step_dist_travelled_withCue_VF1.csv"), 
-#           row.names=FALSE)
 
-saveRDS(GPS_animal_reg_time_step_all,  "W:/VF/2024/animal behaviour data/Long Plain/data_prep/VF1_step5b.rds")
+
+saveRDS(GPS_animal_reg_time_step_all,  "W:/VF/2024/animal behaviour data/Long Plain/data_prep/VF2_step5b.rds")
 
