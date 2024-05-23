@@ -1,4 +1,12 @@
 
+library(dplyr)
+library(tidyverse)
+library(readr)
+library(lubridate)
+library(DT)
+library(sp)
+#install.packages("sf")
+library(sf)
 
 
 
@@ -158,3 +166,29 @@ cue_max_per_animal_day_not_cum_long %>%
   labs(title= "Long Plain sum audio and pulse per day per animal",
        x= "animals",
        y = "sum of cues per day for all animals")
+
+
+##Try this again...
+
+
+#### summaries the data - cumulative data
+str(VF_no_control)
+
+##what is the min time for each date and VF
+min_time_step_Vf <- VF_no_control %>% group_by( date, VF) %>% 
+  summarise(min_time = min(time_step))
+
+min_time_step_Vf
+            
+            cue_max_min_per_animal_day_cum <- VF_no_control %>% group_by( date, animal) %>% 
+  summarise(
+            min_time = min(time_step)
+    
+            # max_audio = max(cumulativeAudioCount),
+            # min_audio = min(cumulativeAudioCount),
+            # max_pulse = max(cumulativeShockCount),
+            # min_pulse = min(cumulativeShockCount)
+            )
+
+print(cue_max_min_per_animal_day_cum)
+
