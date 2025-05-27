@@ -16,37 +16,54 @@ library(sf)
 ## see Pre step1 use QGIS for projection script for Pinnaroo 2021 I used ArcMap
 
 path_step1 <- "W:/VF/2024/animal behaviour data/Pinnaroo2021/data_prep/"
-raw_data <-   "W:/VF/2024/animal behaviour data/Pinnaroo2021/Raw data/Projected_use/"
+#raw_data <-   "W:/VF/2024/animal behaviour data/Pinnaroo2021/Raw data/Projected_use/"
+
                
 #This code only works for some of the data
-# No_VF_animal_GPS_data_1_4 <- read_csv(paste0(raw_data, "No_VF_animal_GPS_data_1_4_GDA.csv"), 
-#                                       col_types = cols(timeOfEven = col_datetime(format = " %Y/%m/%d %H:%M:%S")))
-VF_animal_GPS_data <- read_csv(paste0(raw_data, "Pinnaroo_2021_raw_projectedGDA.csv"),
-                                   col_types = cols(timeOfEven = col_datetime(format = " %Y/%m/%d %H:%M:S%")))
 
-VF_animal_GPS_data <- read_csv("W:/VF/2024/animal behaviour data/Pinnaroo2021/Raw data/Projected_use/Pinnaroo_2021_raw_projectedGDA.csv", 
-         col_types = cols(timeOfEven = col_character(), 
-                          `local time` = col_character()))
+### I am having some trouble with the time stamp format
+## I have downloaded the raw data again and not opened in excel 
+# indexed the data and saved as CSV
+# imported index csv into QGIS, saved a shapefile projected as WGS and then projected as GDA and add geom clm saved as CSV file
+# if the time stamp clm get messed up I was going to use the index data fram to match it but its working
+
+# CSIRO_Pinnaroo_from_email_no_proj <- read_csv("H:/Output-2/Jax_temp_temp/CSIRO_Pinnaroo from email.csv", 
+#                                       col_types = cols(timeOfEven = col_character()))
+# 
+# #index the data
+# CSIRO_Pinnaroo_from_email_no_proj <- CSIRO_Pinnaroo_from_email_no_proj  %>%   mutate(rowid = row_number()) %>%  select(rowid, everything())
+# write_csv(CSIRO_Pinnaroo_from_email_no_proj, "H:/Output-2/Jax_temp_temp/CSIRO_Pinnaroo_from_email_no_proj_index.csv")
+
+
+VF_animal_GPS_data <- read_csv("H:/Output-2/Jax_temp_temp/CSIRO_Pinnaroo from email GDA index v2.csv", 
+                                              col_types = cols(timeOfEven = col_character()))
+
+
 
 head(VF_animal_GPS_data$timeOfEven)
-VF_animal_GPS_data$timeOfEven_v1 <- as.POSIXct(VF_animal_GPS_data$timeOfEven, format="%d/%m/%Y %H:%M", tz="UTC")
-head(VF_animal_GPS_data$timeOfEven_v1)
-check_it_worked <-VF_animal_GPS_data %>%  select(timeOfEven, timeOfEven_v1, `local time`)
+VF_animal_GPS_data$timeOfEven_v1 <- 
+  as.POSIXct(VF_animal_GPS_data$timeOfEven, format="%Y/%m/%d %H:%M", tz="UTC")
 
+
+head(VF_animal_GPS_data$timeOfEven_v1)
+check_it_worked <-VF_animal_GPS_data %>%  select(timeOfEven, timeOfEven_v1)
+rm(check_it_worked)
 ################################################################################
 ###                    Local local_time          #############
 ################################################################################
+
+
 str(VF_animal_GPS_data)
 #str(No_VF_animal_GPS_data)
 
-VF_animal_GPS_data <- VF_animal_GPS_data %>% rename(timeOfEvent = timeOfEvent)
+VF_animal_GPS_data <- VF_animal_GPS_data %>% rename(timeOfEvent = timeOfEven_v1)
 #No_VF_animal_GPS_data <- No_VF_animal_GPS_data %>% rename(timeOfEvent = timeOfEven)
 
 
 #format time and date clm from character to time
 VF_animal_GPS_data <-
   VF_animal_GPS_data %>%
-  mutate(timeOfEvent = as.POSIXct(timeOfEvent, tz = "GMT", format = "%d/%m/%Y %H:%M"))
+  mutate(timeOfEvent = as.POSIXct(timeOfEvent, tz = "GMT", format = "%Y/%m/%d %H:%M"))
 
 
 VF_animal_GPS_data <- VF_animal_GPS_data %>% 
@@ -60,21 +77,9 @@ VF_animal_GPS_data <- VF_animal_GPS_data %>%
   mutate(date = as.Date(local_time, tz= "Australia/Adelaide"),
          DOY = yday(date))
 
+check_it_worked <-VF_animal_GPS_data %>%  select(rowid, ID_jaxs, timeOfEven, timeOfEvent, GMT,local_time,  date, DOY)
+rm(check_it_worked)
 
-
-# No_VF_animal_GPS_data_1_4 <-
-#   No_VF_animal_GPS_data_1_4 %>%
-#   mutate(timeOfEvent = as.POSIXct(timeOfEvent, tz = "GMT", format = "%d/%m/%Y %H:%M"))
-# No_VF_animal_GPS_data_1_4 <- No_VF_animal_GPS_data_1_4 %>% 
-#   mutate(GMT = ymd_hms(timeOfEvent, tz = "GMT"))
-# No_VF_animal_GPS_data_1_4 <- No_VF_animal_GPS_data_1_4 %>% 
-#   mutate(local_time = with_tz(GMT, tz = "Australia/Adelaide"))
-# ## Add a clm for ID_jaxs
-# No_VF_animal_GPS_data_1_4 <- No_VF_animal_GPS_data_1_4 %>% 
-#   dplyr::mutate( ID_jaxs = row_number())
-# No_VF_animal_GPS_data_1_4 <- No_VF_animal_GPS_data_1_4 %>% 
-#   mutate(date = as.Date(local_time, tz= "Australia/Adelaide"),
-#          DOY = yday(date))
 
 
 
@@ -94,20 +99,41 @@ VF_animal_GPS_data <- VF_animal_GPS_data %>%
 unique(VF_animal_GPS_data$fencesID)
 unique(VF_animal_GPS_data$ID_jaxs)
 
+## I am not sure what is what...maybe the date and time might give me a clue
+
+
+max_min_time_fence <- VF_animal_GPS_data %>% 
+  group_by(fencesID) %>% 
+  summarise(min_time = min(local_time, na.rm = TRUE),
+            max_time = max(local_time, na.rm = TRUE)) %>% 
+  arrange(min_time)
+max_min_time_fence
+
+
+#This file helps
+VF_details <- read_csv("W:/VF/Pinnaroo/activation_VF/FenceMapping_v2_edited.csv")
+VF_details
+list_ofFenceID_VF_area <-VF_details %>%  distinct(fence_Id, .keep_all = TRUE) %>% select(vp_name, fence_Id, VF_area, created_on)
+list_ofFenceID_VF_area
+
 
 VF_animal_GPS_data <- VF_animal_GPS_data %>% 
   mutate(
     VF_Fence = case_when(
-    fencesID ==   "19000" ~ "fence1",
-    fencesID ==   "1922f" ~ "fence2",
-    fencesID ==   "11eab" ~ "fence3"))#,
-    #.default ="deactive_VF3"))
+    fencesID ==   "165e0" ~ "VP01",
+    fencesID ==   "1f6da" ~ "VP02",
+    fencesID ==   "1d10b" ~ "VP03",
+    fencesID ==   "1ab95" ~ "VP03",
+    fencesID ==   "1df99" ~ "VP04",
+    fencesID ==   "1f076" ~ "not_sure",
+    .default ="no_fence_assigned"))
     
-    
-# No_VF_animal_GPS_data_1_4 <- No_VF_animal_GPS_data_1_4 %>% 
-#   mutate(VF_Fence = "noVF")
-#      
-#  unique(VF_animal_GPS_data_1_4$fencesID)   
+ 
+check <- VF_animal_GPS_data %>%  distinct(fencesID, VF_Fence, .keep_all = TRUE) %>%     select(VF_Fence, fencesID)
+not_sure   <- VF_animal_GPS_data %>% filter(VF_Fence == "not_sure") #%>%  distinct(deviceName)
+
+
+
 
 ##########################################################################################################
 #############                VF 1                 ########################################################
@@ -115,20 +141,18 @@ VF_animal_GPS_data <- VF_animal_GPS_data %>%
 
 names(VF_animal_GPS_data)
 
-VF1 <- filter(VF_animal_GPS_data, 
-                            between(local_time, 
-                                    ymd_hms('2020-10-21 14:55:00', tz="Australia/Adelaide"),
-                                    ymd_hms('2020-10-25 10:50:00', tz="Australia/Adelaide"))) 
+#I don't have accurate time keeping for when the fence was moved, I will use max and min local time for each fence
+VF1 <- filter(VF_animal_GPS_data,
+                            between(local_time,
+                                    ymd_hms('2021-10-07 17:11:00', tz="Australia/Adelaide"),
+                                    ymd_hms('2021-10-11 12:23:00', tz="Australia/Adelaide")))
 #VF1 <- VF1 %>% filter(VF_Fence == "fence1"  ) # I don't think I can do do this because some entries have no fence
 VF1 <- VF1 %>% mutate(VF_Fence = "fence1")
 
-unique(VF1$fencesID)
-unique(VF1$VF_Fence)
-
 #early time to late time
+max_min_time_fence %>% filter(fencesID == "165e0") 
+list_ofFenceID_VF_area %>% filter(fence_Id == "1.65E+02") 
 
-# activation_fence1 2020-10-21 14:55:00
-# activation_fence2 2020-10-25 10:50:00
 
 min(VF1$local_time)
 max(VF1$local_time)
@@ -149,7 +173,10 @@ unique(VF1$fencesID)
 #############    assign the collar ID to animal ID  VF 1 ########################################################
 ##########################################################################################################
 unique(VF1$deviceName)
-## all VF1 device names match neckband number in animal wt dataset = no need to change anything 20cows
+VF1 %>%  distinct(deviceName) %>% tally
+#39 cows (this is the same cows that were weighed)
+
+## all VF1 device names match neckband number in animal wt dataset = no need to change anything 39cows
 
 VF1 <-VF1 %>%  mutate(animal_ID = deviceName) 
 
@@ -168,32 +195,32 @@ with(NA_VF1, table(date, deviceName))
 ##########################################################################################################
 #############                VF 2                 ########################################################
 ##########################################################################################################
+#early time to late time
+max_min_time_fence %>% filter(fencesID == "1f6da") 
+list_ofFenceID_VF_area
 
 
 VF2 <- filter(VF_animal_GPS_data,
                             between(
                               local_time,
-                              ymd_hms('2020-10-25 10:50:00', tz = "Australia/Adelaide"),
-                              ymd_hms('2020-10-30 08:03:00', tz = "Australia/Adelaide")
+                              ymd_hms('2021-10-11 12:33:00', tz = "Australia/Adelaide"),
+                              ymd_hms('2021-10-12 09:04:00', tz = "Australia/Adelaide")
                             ))
 
-# activation_fence2 2020-10-25 10:50:00
-# activation_fence3 2020-10-30 08:03:00
+VF2 <- VF2 %>% filter(VF_Fence != "VP03") #(not sure I can do this what about the NA)
 
 min(VF2$local_time)
 max(VF2$local_time)
 unique(VF2$VF_Fence) #
 
-#VF2 <- VF2 %>% filter(VF_Fence == "fence2"  )
+
 VF2 <- VF2 %>% mutate(VF_Fence = "fence2"  )
 
 ##########################################################################################################
 #############    assign the collar ID to animal ID  VF 2 ########################################################
 ##########################################################################################################
-unique(VF2$deviceName)
-## all VF2 device names match neckband number in animal wt dataset = no need to change anything 20cows
-
-
+VF2 %>%  distinct(deviceName) %>% tally
+#39 cows (this is the same cows that were weighed)
 
 VF2 <-VF2 %>%  mutate(animal_ID = deviceName) 
 
@@ -212,15 +239,19 @@ with(NA_VF2, table(date, deviceName))
 #############                VF 3                 ########################################################
 ##########################################################################################################
 
+#early time to late time
+max_min_time_fence %>% filter(fencesID == "1d10b" | fencesID == "1ab95") 
+list_ofFenceID_VF_area
+
 VF3 <- filter(VF_animal_GPS_data,
               between(
                 local_time,
-                ymd_hms('2020-10-30 08:03:00', tz = "Australia/Adelaide"),
-                ymd_hms('2020-11-03 11:56:00', tz = "Australia/Adelaide")
+                ymd_hms('2021-10-12 09:03:00', tz = "Australia/Adelaide"),
+                ymd_hms('2021-10-17 09:33:00', tz = "Australia/Adelaide")
               ))
 
-# activation_fence3 2020-10-30 08:03:00
-#deactivation_fence4 2020-11-03 11:56:00
+VF3 <- VF3 %>% filter(VF_Fence != "VP04" ) %>% 
+  filter(VF_Fence != "VP02") #(not sure I can do this what about the NA)
 
 min(VF3$local_time)
 max(VF3$local_time)
@@ -231,8 +262,9 @@ VF3 <- VF3 %>% mutate(VF_Fence = "fence3"  )
 #########################################################################################################
 #############    assign the collar ID to animal ID  VF 3 ########################################################
 ##########################################################################################################
-unique(VF3$deviceName)
-## all VF3 device names match neckband number in animal wt dataset = no need to change anything 20cows
+VF3 %>%  distinct(deviceName) %>% tally
+#39 cows (this is the same cows that were weighed)
+
 VF3 <-VF3 %>%  mutate(animal_ID = deviceName) 
 
 #check we are assignining all the collar ID to animal names
@@ -247,70 +279,72 @@ with(NA_VF3, table(date, deviceName))
 
 
 ##########################################################################################################
-#############                VF deactivation                 ########################################################
+#############                 VF 4                   ########################################################
 ##########################################################################################################
 
 
 
-VF_deactivation <- filter(VF_animal_GPS_data,
+#early time to late time
+max_min_time_fence %>% filter(fencesID == "1df99" ) 
+list_ofFenceID_VF_area
+
+VF4 <- filter(VF_animal_GPS_data,
               between(
                 local_time,
-                ymd_hms('2020-11-03 11:56:00', tz = "Australia/Adelaide"),
-                ymd_hms('2020-11-09 09:00:00', tz = "Australia/Adelaide")
+                ymd_hms('2021-10-17 09:33:00', tz = "Australia/Adelaide"),
+                ymd_hms('2021-10-20 08:53:00', tz = "Australia/Adelaide")
               ))
 
-#deactivation_fence4 2020-11-03 11:56:00
-#end of trial End of trail 2020-11-09 09:00:00 (not sure the exact time)? I will use this time?
+VF4 <- VF4 %>% filter(VF_Fence != "VP03" ) #(not sure I can do this what about the NA)
 
-min(VF_deactivation$local_time)
-max(VF_deactivation$local_time)
-unique(VF_deactivation$VF_Fence)
-
-#VF_deactivation <- VF_deactivation %>% filter(VF_Fence == "deactive_VF3"  )
-VF_deactivation <- VF_deactivation %>% mutate(VF_Fence = "deactive_VF3"  )
+min(VF4$local_time)
+max(VF4$local_time)
+unique(VF4$VF_Fence) 
+VF4 <- VF4 %>% mutate(VF_Fence = "fence4"  )
 
 #########################################################################################################
 #############    assign the collar ID to animal ID  deactivation ########################################################
 ##########################################################################################################
-unique(VF_deactivation$deviceName)
-## all VF_deactivation device names match neckband number in animal wt dataset = no need to change anything 20cows
-VF_deactivation <-VF_deactivation %>%  mutate(animal_ID = deviceName) 
+VF4 %>%  distinct(deviceName) %>% tally
+#39 cows (this is the same cows that were weighed)
+
+VF4 <-VF4 %>%  mutate(animal_ID = deviceName) 
 
 #check we are assignining all the collar ID to animal names
-head(VF_deactivation)
-with(VF_deactivation, table(date, animal_ID))
+head(VF4)
+with(VF4, table(date, animal_ID))
 
 #the location of the NA
-NA_VF_deactivation <- filter(VF_deactivation,animal_ID == "NA")
-with(NA_VF_deactivation, table(date, deviceName))
+NA_VF4 <- filter(VF4,animal_ID == "NA")
+with(NA_VF4, table(date, deviceName))
 
 
-str(VF1)
+
+
+
 check <- rbind(VF1, 
                VF2, 
                VF3, 
-               VF_deactivation
+               VF4
                )
 
 
 
 
 ##########################################################################################################
-unique(No_VF_animal_GPS_data$deviceName)
-## all No_VF_animal_GPS_data_1_4 device names match neckband number in animal wt dataset = no need to change anything 20cows
-#No_VF_animal_GPS_data_1_4 <-No_VF_animal_GPS_data_1_4 %>%  mutate(animal_ID = deviceName) 
+"W:\VF\2024\animal behaviour data\Pinnaroo2021\data_prep"
 
 ##########################################################################################################
 ## save files ###
-saveRDS(VF1,              "W:/VF/2024/animal behaviour data/xx/data_prep/VF1.rds")
-saveRDS(VF2,              "W:/VF/2024/animal behaviour data/xx/data_prep/VF2.rds")
-saveRDS(VF3,              "W:/VF/2024/animal behaviour data/xx/data_prep/VF3.rds")
-saveRDS(VF_deactivation,  "W:/VF/2024/animal behaviour data/xx/data_prep/VF_deactivation.rds")
+saveRDS(VF1,              "W:/VF/2024/animal behaviour data/Pinnaroo2021/data_prep/VF1.rds")
+saveRDS(VF2,              "W:/VF/2024/animal behaviour data/Pinnaroo2021/data_prep/VF2.rds")
+saveRDS(VF3,              "W:/VF/2024/animal behaviour data/Pinnaroo2021/data_prep/VF3.rds")
+saveRDS(VF4,               "W:/VF/2024/animal behaviour data/Pinnaroo2021/data_prep/VF4.rds")
 
 #saveRDS(No_VF_animal_GPS_data,  "W:/VF/2024/animal behaviour data/XXX/data_prep/No_VF_animal_GPS_data_1_4.rds")
 
-VF11_9370004 <- VF1 %>% filter(deviceName == 9370004)
-
-write.csv(VF11_9370004, "W:/VF/2024/animal behaviour data/xx/Raw data/Projected_test/VF1_step1_9370004.csv")
-saveRDS(VF11_9370004,  "W:/VF/2024/animal behaviour data/xx/Raw data/Projected_test/VF1_step1_9370004.rds")
+# VF11_9370004 <- VF1 %>% filter(deviceName == 9370004)
+# 
+# write.csv(VF11_9370004, "W:/VF/2024/animal behaviour data/xx/Raw data/Projected_test/VF1_step1_9370004.csv")
+# saveRDS(VF11_9370004,  "W:/VF/2024/animal behaviour data/xx/Raw data/Projected_test/VF1_step1_9370004.rds")
 
