@@ -116,6 +116,10 @@ VF_details
 list_ofFenceID_VF_area <-VF_details %>%  distinct(fence_Id, .keep_all = TRUE) %>% select(vp_name, fence_Id, VF_area, created_on)
 list_ofFenceID_VF_area
 
+names(VF_animal_GPS_data)
+fences_names_supplied_data <-VF_animal_GPS_data %>%  distinct(fencesID, .keep_all = TRUE) %>% select(fencesID)
+fences_names_supplied_data
+
 
 VF_animal_GPS_data <- VF_animal_GPS_data %>% 
   mutate(
@@ -125,15 +129,20 @@ VF_animal_GPS_data <- VF_animal_GPS_data %>%
     fencesID ==   "1d10b" ~ "VP03",
     fencesID ==   "1ab95" ~ "VP03",
     fencesID ==   "1df99" ~ "VP04",
-    fencesID ==   "1f076" ~ "not_sure",
+    fencesID ==   "1f076" ~ "VP03", # this is from the R markdown report
     .default ="no_fence_assigned"))
     
  
 check <- VF_animal_GPS_data %>%  distinct(fencesID, VF_Fence, .keep_all = TRUE) %>%     select(VF_Fence, fencesID)
-not_sure   <- VF_animal_GPS_data %>% filter(VF_Fence == "not_sure") #%>%  distinct(deviceName)
 
 
-
+##########################################################################################################
+#############    Trim the whole df based on start and end of trial   ######################################
+##########################################################################################################
+VF_animal_GPS_data <- filter(VF_animal_GPS_data,
+              between(local_time,
+                      ymd_hms('2021-10-07 16:03:00', tz="Australia/Adelaide"),
+                      ymd_hms('2021-10-20 08:54:00', tz="Australia/Adelaide")))# this is from the R markdown report
 
 ##########################################################################################################
 #############                VF 1                 ########################################################
@@ -208,11 +217,12 @@ VF2 <- filter(VF_animal_GPS_data,
                             ))
 
 VF2 <- VF2 %>% filter(VF_Fence != "VP03") #(not sure I can do this what about the NA)
+VF2 <- VF2 %>% filter(fencesID != "1d10b") #(not sure I can do this what about the NA)
 
 min(VF2$local_time)
 max(VF2$local_time)
 unique(VF2$VF_Fence) #
-
+unique(VF2$fencesID)
 
 VF2 <- VF2 %>% mutate(VF_Fence = "fence2"  )
 
@@ -238,9 +248,9 @@ with(NA_VF2, table(date, deviceName))
 ##########################################################################################################
 #############                VF 3                 ########################################################
 ##########################################################################################################
-
+unique(VF_animal_GPS_data$fencesID)
 #early time to late time
-max_min_time_fence %>% filter(fencesID == "1d10b" | fencesID == "1ab95") 
+max_min_time_fence %>% filter(fencesID == "1d10b" | fencesID == "1ab95" | fencesID == "1f076") 
 list_ofFenceID_VF_area
 
 VF3 <- filter(VF_animal_GPS_data,
@@ -256,6 +266,8 @@ VF3 <- VF3 %>% filter(VF_Fence != "VP04" ) %>%
 min(VF3$local_time)
 max(VF3$local_time)
 unique(VF3$VF_Fence) #
+unique(VF3$fencesID)
+
 #VF3 <- VF3 %>% filter(VF_Fence == "fence3"  )
 VF3 <- VF3 %>% mutate(VF_Fence = "fence3"  )
 

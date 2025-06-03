@@ -13,7 +13,7 @@ library(sf)
 ############################################################################################
 ############                  bring in boundaries             ##############################
 ############################################################################################
-"W:\VF\2024\spatial\Pinnaroo_2021\Pinnaroo_Bound_GDA.shp"
+#"W:\VF\2024\spatial\Pinnaroo_2021\Pinnaroo_Bound_GDA.shp"
 Hard_fence_bound <- st_read("W:/VF/2024/spatial/Pinnaroo_2021/Pinnaroo_Bound_GDA.shp")  # this is the hard fences
 Hard_fence_bound <-
   st_transform(Hard_fence_bound, crs = 28354)
@@ -221,6 +221,10 @@ rm(list=ls()[! ls() %in% c("Hard_fence_bound","VF_fence_bound","Hard_fence_bound
 
 
 step1_3VF <- readRDS(paste0(path_step1, "VF3.rds"))
+unique(step1_3VF$VF_Fence) #
+unique(step1_3VF$fencesID)
+
+
 
 #format time and date clm from character to time
 
@@ -229,6 +233,8 @@ step1_3VF <- readRDS(paste0(path_step1, "VF3.rds"))
 step1_2_VF3 <- step1_3VF %>% 
   dplyr::mutate( ID_jaxs = row_number()) #%>% 
   #dplyr::mutate(fencesID = "VF3")
+
+
 
 
 step1_2_VF3 <- step1_2_VF3 %>% 
@@ -260,11 +266,15 @@ GPS_sf_trans_VF3 <-step1_2_VF3
 step1_2_sf_clip_VF3 <-
   st_intersection(GPS_sf_trans_VF3, st_difference(Hard_fence_bound)) #this 'st_difference' function is supposed to remove the duplication
 
-
+step1_3VF_NULL <- step1_2_sf_clip_VF3 %>% filter(fencesID == "NULL")
+step1_3VF_NA <- step1_2_sf_clip_VF3 %>% filter(is.na(fencesID)) 
 
 
  ggplot() +
    geom_sf(data = VF_fence_bound, color = "black", fill = NA) +
+   
+   geom_sf(data = step1_3VF_NULL, color = "green", fill = NA) + # occurs on the 15 only a few point
+   geom_sf(data = step1_3VF_NA, color = "blue", fill = NA) + # occurs on the 14 only a few point
    
    geom_sf(data = step1_2_sf_clip_VF3 ,alpha = 0.03) +
    theme_bw()+
@@ -339,13 +349,22 @@ GPS_sf_trans_4VF <- step1_4VF_sf
 GPS_sf_trans_4VF_clip <-
   st_intersection(GPS_sf_trans_4VF, st_difference(Hard_fence_bound)) #this 'st_difference' function is supposed to remove the duplication
 
+step1_4VF_NULL <- GPS_sf_trans_4VF_clip %>% filter(fencesID == "NULL")
+step1_4VF_NA <- GPS_sf_trans_4VF_clip %>% filter(is.na(fencesID)) 
+step1_4VF_No_NA_NULL <- GPS_sf_trans_4VF_clip %>% filter(!is.na(fencesID)) %>% filter(fencesID != "NULL") 
 
-
+unique(step1_4VF_No_NA_NULL$fencesID)
 
  ggplot() +
    geom_sf(data = VF_fence_bound, color = "black", fill = NA) +
-#   geom_sf(data = VF1_paddock, color = "black", fill = NA) +
+   geom_sf(data = Hard_fence_bound, color = "black", fill = NA) +
+   
+   #geom_sf(data = GPS_sf_trans_4VF_clip ,color = "green",alpha = 0.03) + #heaps of data point
+   #geom_sf(data = GPS_sf_trans_4VF_clip ,color = "blue",alpha = 0.03) + #heaps of data point
+   
    geom_sf(data = GPS_sf_trans_4VF_clip ,alpha = 0.03) +
+   geom_sf(data = step1_4VF_No_NA_NULL ,color = "pink") +
+   
    theme_bw()+
    facet_wrap(.~ date)+
    theme(legend.position = "none",
