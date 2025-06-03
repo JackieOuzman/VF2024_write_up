@@ -374,17 +374,31 @@ unique(step1_4VF_No_NA_NULL$fencesID)
 ## convert the geom clm into x and y clms
 
 
-coordinates <-as.data.frame( st_coordinates(GPS_sf_trans_4VF_clip))
-GPS_sf_trans_4VF_clip <- as.data.frame(GPS_sf_trans_4VF_clip)
 
-GPS_sf_trans_4VF_clip <- GPS_sf_trans_4VF_clip %>% 
+ coordinates <-as.data.frame( st_coordinates(GPS_sf_trans_4VF_clip))
+ GPS_sf_trans_4VF_clip <- as.data.frame(GPS_sf_trans_4VF_clip)
+ 
+ GPS_sf_trans_4VF_clip <- GPS_sf_trans_4VF_clip %>% 
+   dplyr::select(-"geometry")
+ 
+ GPS_sf_trans_4VF_clip <-   cbind(GPS_sf_trans_4VF_clip,coordinates )
+ 
+ ### OR
+coordinates <-as.data.frame( st_coordinates(step1_4VF_No_NA_NULL))
+GPS_sf_trans_4VF_clip <- as.data.frame(step1_4VF_No_NA_NULL)
+
+step1_4VF_No_NA_NULL <- step1_4VF_No_NA_NULL %>% 
   dplyr::select(-"geometry")
 
+step1_4VF_No_NA_NULL <-   cbind(step1_4VF_No_NA_NULL,coordinates )
 
-GPS_sf_trans_4VF_clip <-   cbind(GPS_sf_trans_4VF_clip,coordinates )
+
+
+
 
 
 saveRDS(GPS_sf_trans_4VF_clip,  "W:/VF/2024/animal behaviour data/Pinnaroo2021/data_prep/VF3step3_clip.rds")
+saveRDS(step1_4VF_No_NA_NULL,  "W:/VF/2024/animal behaviour data/Pinnaroo2021/data_prep/VF3step3_clip_noNA.rds")
 
 
 rm(list=ls()[! ls() %in% c("Hard_fence_bound","VF_fence_bound","Hard_fence_bound_VF",
