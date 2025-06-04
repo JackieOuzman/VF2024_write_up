@@ -73,6 +73,9 @@ Av_of_cues_per_VFmob_use_cum <- summary_of_cues_per_animal_use_cum %>%
             
 Av_of_cues_per_VFmob_use_cum
 
+write_csv(Av_of_cues_per_VFmob_use_cum, 
+          "W:/VF/2024/animal behaviour data/Long Plain/data_for_plots/Av_of_cues_per_VFmob_use_cum_LP.csv")
+
 ################################################################################
 # By VF 1
 names(VF_no_control)
