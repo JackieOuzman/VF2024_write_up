@@ -223,10 +223,10 @@ Pulse_LP <- high_cows_audio_summary %>%
 Pulse_LP
 
 ggsave(Pulse_LP,
-       filename = "W:/VF/2024/animal behaviour data//data_for_plots/CumPulse_vsDays_byanimals_Pinnaroo2021.png", 
+       filename = "W:/VF/2024/animal behaviour data/Pinnaroo2021/data_for_plots/CumPulse_vsDays_byanimals_Pinnaroo2021.png", 
        width = 15, height = 8, dpi = 600, units = "cm")
 
 Audio_LP
 ggsave(Audio_LP,
-       filename = "W:/VF/2024/animal behaviour data//data_for_plots/CumAudio_vsDays_byanimals_Pinnaroo2021.png", 
+       filename = "W:/VF/2024/animal behaviour data/Pinnaroo2021/data_for_plots/CumAudio_vsDays_byanimals_Pinnaroo2021.png", 
        width = 15, height = 8, dpi = 600, units = "cm")
