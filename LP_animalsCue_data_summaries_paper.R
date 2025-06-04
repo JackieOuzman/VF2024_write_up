@@ -47,6 +47,23 @@ Av_of_cues_per_VFmob
 
 
 ################################################################################
+## how long was the VF active for?
+
+names(VF_no_control)
+start <- min(VF_no_control$local_time, na.rm = TRUE)  # 
+end <-   max(VF_no_control$local_time, na.rm = TRUE) # 
+
+time.interval <- start %--% end
+time.interval
+time.duration <- as.duration(time.interval)
+time.duration # 1620016s (~2.68 weeks (should be 19 days)
+seconds_in_day <- 86400
+#This is a bit sloppy but 86400 seconds in a day
+days <- time.duration/seconds_in_day
+days_round <- as.numeric(round(days, 0))
+days_round
+####
+
 summary_of_cues_per_animal_use_cum <-  VF_no_control %>% 
   group_by(animal) %>% 
   summarise(max_aduio = max( cumulativeAudioCount, na.rm = TRUE),
@@ -67,8 +84,10 @@ Av_of_cues_per_VFmob_use_cum <- summary_of_cues_per_animal_use_cum %>%
             percet_pulse = ((mean_pulse / mean_aduio)*100),
             percet_audio = ((mean_aduio/ (mean_aduio + mean_pulse)*100)),
                             
-            mean_aduio_per_day = mean( max_aduio, na.rm = TRUE)/14, #number of day the VF was active
-            mean_pulse_per_day = mean( max_pulse, na.rm = TRUE)/14 #number of day the VF was active
+            mean_aduio_per_day = mean( max_aduio, na.rm = TRUE)/days_round, #number of day the VF was active
+            mean_pulse_per_day = mean( max_pulse, na.rm = TRUE)/days_round, #number of day the VF was active
+            
+            days = days_round
             )
             
 Av_of_cues_per_VFmob_use_cum
