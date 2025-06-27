@@ -31,7 +31,7 @@ summary_of_cues_per_animal_use_cum <-  VF_no_control %>%
 summary_of_cues_per_animal_use_cum <- ungroup(summary_of_cues_per_animal_use_cum)
 #summary_of_cues_per_animal_use_cum <- summary_of_cues_per_animal_use_cum %>% filter( date< "2020-11-04" )
 
-VF_dates=data.frame(date=as.Date(c("2021-10-07", "2021-10-11", "2021-10-12", "2021-11-17")), 
+VF_dates=data.frame(date=as.Date(c("2021-10-07", "2021-10-11", "2021-10-12", "2021-10-17")), 
                     event=c("VF1", "VF2", "VF3", "VF4"))
 
 
@@ -148,7 +148,7 @@ Audio_LP
 ###Pulse 
 str(VF_no_control)
 
-VF_dates=data.frame(date=as.Date(c("2021-10-07", "2021-10-11", "2021-10-12", "2021-11-17")), 
+VF_dates=data.frame(date=as.Date(c("2021-10-07", "2021-10-11", "2021-10-12", "2021-10-17")), 
                     event=c("VF1", "VF2", "VF3", "VF4"))
 
 

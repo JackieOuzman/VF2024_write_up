@@ -1,5 +1,12 @@
 ## step for the paper and plots
-
+library(dplyr)
+library(tidyverse)
+library(readr)
+library(lubridate)
+library(DT)
+library(sp)
+#install.packages("sf")
+library(sf)
 
 data_source <- "W:/VF/2024/animal behaviour data/Long Plain/data_prep/"
 
@@ -29,3 +36,4 @@ saveRDS( LP_all_data, "W:/VF/2024/animal behaviour data/Long Plain/data_for_plot
 
 unique(VF1$date)
 unique(VF2$date)
+

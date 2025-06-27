@@ -58,10 +58,11 @@ end <-   max(VF_no_control$local_time, na.rm = TRUE) #
 time.interval <- start %--% end
 time.interval
 time.duration <- as.duration(time.interval)
-time.duration # 1620016s (~2.68 weeks (should be 19 days)
+time.duration # 1620016s ()
 seconds_in_day <- 86400
 #This is a bit sloppy but 86400 seconds in a day
 days <- time.duration/seconds_in_day
+days
 days_round <- as.numeric(round(days, 0))
 days_round
 #####

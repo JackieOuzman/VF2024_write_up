@@ -34,8 +34,8 @@ path_step1 <- "W:/VF/2024/animal behaviour data/Pinnaroo2021/data_prep/"
 # CSIRO_Pinnaroo_from_email_no_proj <- CSIRO_Pinnaroo_from_email_no_proj  %>%   mutate(rowid = row_number()) %>%  select(rowid, everything())
 # write_csv(CSIRO_Pinnaroo_from_email_no_proj, "H:/Output-2/Jax_temp_temp/CSIRO_Pinnaroo_from_email_no_proj_index.csv")
 
-
-VF_animal_GPS_data <- read_csv("H:/Output-2/Jax_temp_temp/CSIRO_Pinnaroo from email GDA index v2.csv", 
+                              
+VF_animal_GPS_data <- read_csv("W:/VF/2024/animal behaviour data/Pinnaroo2021/Jax_temp_temp/CSIRO_Pinnaroo from email GDA index v2.csv", 
                                               col_types = cols(timeOfEven = col_character()))
 
 
@@ -134,7 +134,14 @@ VF_animal_GPS_data <- VF_animal_GPS_data %>%
     
  
 check <- VF_animal_GPS_data %>%  distinct(fencesID, VF_Fence, .keep_all = TRUE) %>%     select(VF_Fence, fencesID)
+check
+Local_time_each_fence <- VF_animal_GPS_data %>% 
+  group_by(fencesID) %>% 
+  summarise(min_local_time = min(local_time, na.rm=TRUE),
+            max_loca_time = max(local_time, na.rm = TRUE)) %>% 
+  arrange(min_local_time)
 
+Local_time_each_fence
 
 ##########################################################################################################
 #############    Trim the whole df based on start and end of trial   ######################################

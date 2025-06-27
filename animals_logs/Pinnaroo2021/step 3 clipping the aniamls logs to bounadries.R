@@ -21,9 +21,12 @@ Hard_fence_bound <-
 
 
 
-VF_fence_bound <- st_read("W:/VF/2024/spatial/Pinnaroo_2021//Pinnaroo_VF_clip_external_GDA.shp")  # this has 2 hard fences
+VF_fence_bound <- st_read("W:/VF/2024/spatial/Pinnaroo_2021/Pinnaroo_VF_clip_external_GDA.shp")  # this has 2 hard fences
 VF_fence_bound <-
   st_transform(VF_fence_bound, crs = 28354)
+
+VF_fence_VF2 <- st_read("W:/VF/2024/spatial/Pinnaroo_2021/VF2_Fence.shp")
+VF_fence_VF3 <- st_read("W:/VF/2024/spatial/Pinnaroo_2021/VF3_Fence.shp")
 
 #Test/ check#
 # str(Hard_fence_bound)
@@ -78,10 +81,10 @@ step1_2_VF1_sf <-
 # st_write(step1_2_VF1_sf, "W:/VF/2024/animal behaviour data/Pinnaroo2021/CHECKstep1_2_VF1_sf_project_first.shp", layer_options = "GEOMETRY=AS_XY")
 # write_csv(step1_2_VF1, "W:/VF/2024/animal behaviour data/Pinnaroo2021/CHECK.csv")
 # 
-# ggplot() +
-#   geom_sf(data = Hard_fence_bound, color = "black", fill = NA) +
-#   geom_sf(data = VF_fence_bound ,color = "blue", fill = NA) +
-#   geom_sf(data = step1_2_VF1_sf ,color = "green") 
+ ggplot() +
+   geom_sf(data = Hard_fence_bound, color = "black", fill = NA) +
+   geom_sf(data = VF_fence_bound ,color = "blue", fill = NA) +
+   geom_sf(data = step1_2_VF1_sf ,color = "green") 
 
 
 
@@ -269,16 +272,18 @@ step1_2_sf_clip_VF3 <-
 step1_3VF_NULL <- step1_2_sf_clip_VF3 %>% filter(fencesID == "NULL")
 step1_3VF_NA <- step1_2_sf_clip_VF3 %>% filter(is.na(fencesID)) 
 
-
- ggplot() +
-   geom_sf(data = VF_fence_bound, color = "black", fill = NA) +
+names(step1_2_sf_clip_VF3)
+ 
+ggplot() +
+   #geom_sf(data = VF_fence_bound, color = "black", fill = NA) +
+   geom_sf(data = VF_fence_VF2, color = "green", fill = NA) +
+   geom_sf(data = VF_fence_VF3, color = "blue", fill = NA) +
+  # geom_sf(data = step1_3VF_NULL, color = "green", fill = NA) + # occurs on the 15 only a few point
+  # geom_sf(data = step1_3VF_NA, color = "blue", fill = NA) + # occurs on the 14 only a few point
    
-   geom_sf(data = step1_3VF_NULL, color = "green", fill = NA) + # occurs on the 15 only a few point
-   geom_sf(data = step1_3VF_NA, color = "blue", fill = NA) + # occurs on the 14 only a few point
-   
-   geom_sf(data = step1_2_sf_clip_VF3 ,alpha = 0.03) +
+   geom_sf(data = filter(step1_2_sf_clip_VF3, fencesID == "1d10b") ,alpha = 0.01) +
    theme_bw()+
-   facet_wrap(.~ date)+
+   facet_wrap(date ~fencesID)+
    theme(legend.position = "none",
          axis.ticks = element_blank(), axis.text.x = element_blank(), axis.text.y = element_blank())+
    labs(title = "clipped to the hard fence")
