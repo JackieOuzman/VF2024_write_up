@@ -31,20 +31,20 @@ path_step1 <- "W:/VF/2024/animal behaviour data/Pinnaroo2022/data_prep/"
 #                                       col_types = cols(timeOfEven = col_character()))
 # 
 
-VF_animal_GPS_data <- read_csv("W:/VF/2024/animal behaviour data/Pinnaroo2022/data_prep/trial_csiro_pinnaroo_mob_273_angus_heifers_filtered.csv")
+VF_animal_GPS_data <- read_csv("W:/VF/2024/animal behaviour data/Pinnaroo2022/data_prep/XYtrial_csiro_pinnaroo_mob_273_angus_heifers_filtered_GDA.csv")
 
 str(VF_animal_GPS_data)                              
 # #index the data
 VF_animal_GPS_data <- VF_animal_GPS_data  %>%   
   mutate(rowid = row_number()) %>%  select(rowid, everything())
 # write_csv(CSIRO_Pinnaroo_from_email_no_proj, "W:/VF/2024/animal behaviour data/Pinnaroo2022/data_prep/trial_csiro_pinnaroo_mob_273_angus_heifers_filtered.csv")
-head(VF_animal_GPS_data$timeOfEvent)
+head(VF_animal_GPS_data$timeOfEven)
 VF_animal_GPS_data$timeOfEven_v1 <- 
-  as.POSIXct(VF_animal_GPS_data$timeOfEvent, format="%d/%m/%Y %H:%M", tz="UTC")
+  as.POSIXct(VF_animal_GPS_data$timeOfEven, format="%d/%m/%Y %H:%M", tz="UTC")
 
 
 head(VF_animal_GPS_data$timeOfEven_v1)
-check_it_worked <-VF_animal_GPS_data %>%  select(timeOfEvent, timeOfEven_v1)
+check_it_worked <-VF_animal_GPS_data %>%  select(timeOfEven, timeOfEven_v1)
 rm(check_it_worked)
 ################################################################################
 ###                    Local local_time          #############
@@ -66,11 +66,11 @@ str(VF_animal_GPS_data)
 #   VF_animal_GPS_data %>%
 #   mutate(timeOfEvent = as.POSIXct(timeOfEvent, tz = "GMT", format = "%Y/%m/%d %H:%M"))
 
-str(VF_animal_GPS_data$timeOfEvent)
+str(VF_animal_GPS_data$timeOfEven)
 str(VF_animal_GPS_data$timeOfEven_v1)
 
 VF_animal_GPS_data <- VF_animal_GPS_data %>% 
-  mutate(GMT = dmy_hm(timeOfEvent, tz = "GMT"))
+  mutate(GMT = dmy_hm(timeOfEven, tz = "GMT"))
 str(VF_animal_GPS_data$GMT)
 
 VF_animal_GPS_data <- VF_animal_GPS_data %>% 
@@ -86,7 +86,7 @@ check_it_worked <-VF_animal_GPS_data %>%  select(
   rowid, 
   #ID_jaxs, 
   timeOfEven_v1, 
-  timeOfEvent, 
+  timeOfEven, 
   GMT,local_time,  
   date, 
   DOY)
