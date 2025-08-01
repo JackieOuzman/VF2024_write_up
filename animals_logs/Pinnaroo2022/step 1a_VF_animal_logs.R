@@ -7,7 +7,7 @@ library(DT)
 library(sp)
 #install.packages("sf")
 library(sf)
-
+library(readxl )
 
 ############################################################################################
 ########    bring in data  this is a massive mess and heaps of data ########################
@@ -149,7 +149,7 @@ VF_animal_GPS_data <- VF_animal_GPS_data %>%
     fencesID ==   "14143" ~ "VP03",
     fencesID ==   "1b424" ~ "VP04",
     fencesID ==   "18711" ~ "VP05",
-    fencesID ==   "1cdd8" ~ "VP06", # this is from the R markdown report
+    fencesID ==   "1cdd8" ~ "VP06", 
     .default ="no_fence_assigned"))
     
  
@@ -462,6 +462,7 @@ check <- rbind(VF1,
                )
 
 names(check)
+
 test <- check %>% count(animal_ID, VF_Fence) 
 test2 <- test %>%  count(VF_Fence)
 
@@ -490,6 +491,9 @@ saveRDS(VF2,              "W:/VF/2024/animal behaviour data/Pinnaroo2022/data_pr
 saveRDS(VF3,              "W:/VF/2024/animal behaviour data/Pinnaroo2022/data_prep/VF3.rds")
 saveRDS(VF4,               "W:/VF/2024/animal behaviour data/Pinnaroo2022/data_prep/VF4.rds")
 
+saveRDS(VF5,               "W:/VF/2024/animal behaviour data/Pinnaroo2022/data_prep/VF5.rds")
+saveRDS(VF6,               "W:/VF/2024/animal behaviour data/Pinnaroo2022/data_prep/VF6.rds")
+
 #saveRDS(No_VF_animal_GPS_data,  "W:/VF/2024/animal behaviour data/XXX/data_prep/No_VF_animal_GPS_data_1_4.rds")
 
 # VF11_9370004 <- VF1 %>% filter(deviceName == 9370004)
@@ -497,3 +501,53 @@ saveRDS(VF4,               "W:/VF/2024/animal behaviour data/Pinnaroo2022/data_p
 # write.csv(VF11_9370004, "W:/VF/2024/animal behaviour data/xx/Raw data/Projected_test/VF1_step1_9370004.csv")
 # saveRDS(VF11_9370004,  "W:/VF/2024/animal behaviour data/xx/Raw data/Projected_test/VF1_step1_9370004.rds")
 
+
+##########################################################################################################
+### make sure the label VF aligns with the bounday and dates
+str(VF1)
+names(check)
+unique(check$VF_Fence)
+
+Hard_fence_bound <- st_read("W:/VF/2024/spatial/Pinnaroo_2022/Paddock_outline.shp")  # this is the hard fences
+Hard_fence_bound <-
+  st_transform(Hard_fence_bound, crs = 28354)
+
+VF_fence_bound <- st_read("W:/VF/2024/spatial/Pinnaroo_2022/all_VF.shp")  # 
+VF_fence_bound <-
+  st_transform(VF_fence_bound, crs = 28354)
+
+VF_fence_VF1 <- st_read("W:/VF/2024/spatial/Pinnaroo_2022/VF1_Fence.shp")
+VF_fence_VF2 <- st_read("W:/VF/2024/spatial/Pinnaroo_2022/VF2_Fence.shp")
+VF_fence_VF3 <- st_read("W:/VF/2024/spatial/Pinnaroo_2022/VF3_Fence.shp")
+VF_fence_VF4 <- st_read("W:/VF/2024/spatial/Pinnaroo_2022/VF4_Fence.shp")
+VF_fence_VF5 <- st_read("W:/VF/2024/spatial/Pinnaroo_2022/VF5_Fence.shp")
+VF_fence_VF6 <- st_read("W:/VF/2024/spatial/Pinnaroo_2022/VF6_Fence.shp")
+
+check_sf <-
+  st_as_sf(check,
+           coords = c("xcoord", "ycoord"),
+           crs = 28354, #
+           agr = "constant")
+
+
+
+ggplot() +
+  geom_sf(data = Hard_fence_bound, color = "black", fill = NA) +
+  #geom_sf(data = VF_fence_VF1, color = "blue", fill = NA) +
+  #geom_sf(data = VF_fence_VF2, color = "red", fill = NA) +
+  #geom_sf(data = VF_fence_VF3, color = "green", fill = NA) + # 
+  #geom_sf(data = VF_fence_VF4, color = "blue", fill = NA) + # 
+  #geom_sf(data = VF_fence_VF5, color = "red", fill = NA) + # 
+  geom_sf(data = VF_fence_VF6, color = "green", fill = NA) + # 
+  
+  #geom_sf(data = filter(check_sf, VF_Fence ==  "fence1"),alpha = 0.03) +
+  #geom_sf(data = filter(check_sf, VF_Fence ==  "fence2"),alpha = 0.03) +
+  #geom_sf(data = filter(check_sf, VF_Fence ==  "fence3"),alpha = 0.03) +
+  #geom_sf(data = filter(check_sf, VF_Fence ==  "fence4"),alpha = 0.03) +
+  #geom_sf(data = filter(check_sf, VF_Fence ==  "fence5"),alpha = 0.03) +
+  geom_sf(data = filter(check_sf, VF_Fence ==  "fence6"),alpha = 0.03) +
+  theme_bw()+
+  facet_wrap(.~ date)+
+  theme(legend.position = "none",
+        axis.ticks = element_blank(), axis.text.x = element_blank(), axis.text.y = element_blank())+
+  labs(title = "check")
