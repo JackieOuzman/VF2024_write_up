@@ -16,22 +16,22 @@ VF_all <-  readRDS("W:/VF/2024/animal behaviour data/Pinnaroo2022/data_for_plots
 VF_no_control <- VF_all %>% filter(VF != "VFControl")
 
 #This anaimal seems a bit suss I will exclude from results
-VF_no_control <- VF_no_control %>% filter(animal != 9380384) %>% 
+#VF_no_control <- VF_no_control %>% filter(animal != 9380384) %>% 
 
 ### mean of audio and cue data for all VF animals
 names(VF_no_control)
 
 #Lots of negative values - lets recode these to zero
-VF_no_control <- VF_no_control %>% 
+VF_no_control <- VF_no_control %>%
   mutate(
     Audio_values=  case_when(
       Audio_values < 0 ~ 0,
       .default = Audio_values))
-VF_no_control <- VF_no_control %>% 
+VF_no_control <- VF_no_control %>%
   mutate(
     Shock_values=  case_when(
       Shock_values < 0 ~ 0,
-      .default = Shock_values))   
+      .default = Shock_values))
 
 
 summary_of_cues_by_animals <-  VF_no_control %>% 
@@ -58,13 +58,13 @@ end <-   max(VF_no_control$local_time, na.rm = TRUE) #
 time.interval <- start %--% end
 time.interval
 time.duration <- as.duration(time.interval)
-time.duration # 1620016s ()
+time.duration #747000s (~1.24 weeks)
 seconds_in_day <- 86400
 #This is a bit sloppy but 86400 seconds in a day
 days <- time.duration/seconds_in_day
 days
 days_round <- as.numeric(round(days, 0))
-days_round
+days_round #9 days
 #####
 
 summary_of_cues_per_animal_use_cum <-  VF_no_control %>% 
@@ -111,12 +111,12 @@ end <-   max(VF1_no_control$local_time, na.rm = TRUE) #
 time.interval <- start %--% end
 time.interval
 time.duration <- as.duration(time.interval)
-time.duration # 328200s (~3.8 days)
+time.duration # 162000s (~1.88 days)"
 seconds_in_day <- 86400
 #This is a bit sloppy but 86400 seconds in a day
 days <- time.duration/seconds_in_day
 days_round <- as.numeric(round(days, 0))
-days_round
+days_round #2
 #####
 
 
@@ -169,7 +169,7 @@ end <-   max(VF2_no_control$local_time, na.rm = TRUE) #
 time.interval <- start %--% end
 time.interval
 time.duration <- as.duration(time.interval)
-time.duration # 73200s (~20.33 hours)"
+time.duration #1200s (~20 minutes)"
 seconds_in_day <- 86400
 #This is a bit sloppy but 86400 seconds in a day
 days <- time.duration/seconds_in_day
@@ -224,13 +224,13 @@ end <-   max(VF3_no_control$local_time, na.rm = TRUE) #
 time.interval <- start %--% end
 time.interval
 time.duration <- as.duration(time.interval)
-time.duration # 433800s (~5.02 days)
+time.duration # 247800s (~2.87 days)
 seconds_in_day <- 86400
 #This is a bit sloppy but 86400 seconds in a day
 days <- time.duration/seconds_in_day
 days_round <- as.numeric(round(days, 0))
-days_round
-#####
+days_round #3
+##### 
 
 
 
@@ -281,12 +281,12 @@ end <-   max(VF4_no_control$local_time, na.rm = TRUE) #
 time.interval <- start %--% end
 time.interval
 time.duration <- as.duration(time.interval)
-time.duration #256800s (~2.97 days)"
+time.duration #88800s (~1.03 days)"
 seconds_in_day <- 86400
 #This is a bit sloppy but 86400 seconds in a day
 days <- time.duration/seconds_in_day
 days_round <- as.numeric(round(days, 0))
-days_round
+days_round #1
 #####
 
 
@@ -325,3 +325,134 @@ write_csv(VF4_Av_of_cues_per_VFmob_use_cum,
           "W:/VF/2024/animal behaviour data/Pinnaroo2022/data_for_plots/Av_of_cues_per_VF4mob_use_cum.csv") 
 
 
+################################################################################
+# By VF 5
+names(VF_no_control)
+VF5_no_control <-  VF_no_control %>% filter(VF=="VF5")
+
+start <- min(VF5_no_control$local_time, na.rm = TRUE)  # 
+end <-   max(VF5_no_control$local_time, na.rm = TRUE) # 
+
+time.interval <- start %--% end
+time.interval
+time.duration <- as.duration(time.interval)
+time.duration #89400s (~1.03 days)"
+seconds_in_day <- 86400
+#This is a bit sloppy but 86400 seconds in a day
+days <- time.duration/seconds_in_day
+days_round <- as.numeric(round(days, 0))
+days_round #1
+#####
+
+
+
+V5_summary_of_cues_per_animal_use_cum <-  VF_no_control %>% 
+  filter(VF=="VF5") %>% 
+  filter(!is.na(animal)) %>% 
+  group_by(animal) %>% 
+  summarise(max_aduio = max( cumulativeAudioCount, na.rm = TRUE),
+            max_pulse = max( cumulativeShockCount, na.rm = TRUE))
+V5_summary_of_cues_per_animal_use_cum
+
+V5_summary_of_cues_per_animal_use_cum <- V5_summary_of_cues_per_animal_use_cum %>% 
+  group_by() %>% 
+  summarise(mean_aduio = mean( max_aduio, na.rm = TRUE),
+            mean_pulse = mean( max_pulse, na.rm = TRUE),
+            
+            sd_aduio = sd(max_aduio, na.rm = TRUE),
+            sd_pulse = sd(max_pulse, na.rm = TRUE),
+            
+            aduio_SE = sd_aduio/ sqrt(n()),
+            pulse_SE = sd_pulse/ sqrt(n()),
+            
+            percet_pulse = ((mean_pulse / mean_aduio)*100),
+            percet_audio = ((mean_aduio/ (mean_aduio + mean_pulse)*100)),
+            
+            mean_aduio_per_day = mean( max_aduio, na.rm = TRUE)/days_round, #number of day the VF was active
+            mean_pulse_per_day = mean( max_pulse, na.rm = TRUE)/days_round, #number of day the VF was active
+            
+            days = days_round 
+  )
+
+V5_summary_of_cues_per_animal_use_cum
+
+write_csv(V5_summary_of_cues_per_animal_use_cum,
+          "W:/VF/2024/animal behaviour data/Pinnaroo2022/data_for_plots/Av_of_cues_per_VF5mob_use_cum.csv") 
+
+
+################################################################################
+# By VF 6
+names(VF_no_control)
+VF6_no_control <-  VF_no_control %>% filter(VF=="VF6")
+
+start <- min(VF6_no_control$local_time, na.rm = TRUE)  # 
+end <-   max(VF6_no_control$local_time, na.rm = TRUE) # 
+
+time.interval <- start %--% end
+time.interval
+time.duration <- as.duration(time.interval)
+time.duration #152400s (~1.76 days)"
+seconds_in_day <- 86400
+#This is a bit sloppy but 86400 seconds in a day
+days <- time.duration/seconds_in_day
+days_round <- as.numeric(round(days, 0))
+days_round #2
+#####
+
+
+
+V6_summary_of_cues_per_animal_use_cum <-  VF_no_control %>% 
+  filter(VF=="VF6") %>% 
+  filter(!is.na(animal)) %>% 
+  group_by(animal) %>% 
+  summarise(max_aduio = max( cumulativeAudioCount, na.rm = TRUE),
+            max_pulse = max( cumulativeShockCount, na.rm = TRUE))
+V6_summary_of_cues_per_animal_use_cum
+
+V6_summary_of_cues_per_animal_use_cum <- V6_summary_of_cues_per_animal_use_cum %>% 
+  group_by() %>% 
+  summarise(mean_aduio = mean( max_aduio, na.rm = TRUE),
+            mean_pulse = mean( max_pulse, na.rm = TRUE),
+            
+            sd_aduio = sd(max_aduio, na.rm = TRUE),
+            sd_pulse = sd(max_pulse, na.rm = TRUE),
+            
+            aduio_SE = sd_aduio/ sqrt(n()),
+            pulse_SE = sd_pulse/ sqrt(n()),
+            
+            percet_pulse = ((mean_pulse / mean_aduio)*100),
+            percet_audio = ((mean_aduio/ (mean_aduio + mean_pulse)*100)),
+            
+            mean_aduio_per_day = mean( max_aduio, na.rm = TRUE)/days_round, #number of day the VF was active
+            mean_pulse_per_day = mean( max_pulse, na.rm = TRUE)/days_round, #number of day the VF was active
+            
+            days = days_round 
+  )
+
+V6_summary_of_cues_per_animal_use_cum
+
+write_csv(V6_summary_of_cues_per_animal_use_cum,
+          "W:/VF/2024/animal behaviour data/Pinnaroo2022/data_for_plots/Av_of_cues_per_VF6mob_use_cum.csv") 
+
+Av_of_cues_per_VFmob_use_cum <- Av_of_cues_per_VFmob_use_cum %>% mutate(VF= "all")
+VF1_Av_of_cues_per_VFmob_use_cum <- VF1_Av_of_cues_per_VFmob_use_cum %>% mutate(VF= "VF1")
+VF2_Av_of_cues_per_VFmob_use_cum <- VF2_Av_of_cues_per_VFmob_use_cum %>% mutate(VF= "VF2")
+VF3_Av_of_cues_per_VFmob_use_cum <- VF3_Av_of_cues_per_VFmob_use_cum %>% mutate(VF= "VF3")
+VF4_Av_of_cues_per_VFmob_use_cum <- VF4_Av_of_cues_per_VFmob_use_cum %>% mutate(VF= "VF4")
+V5_summary_of_cues_per_animal_use_cum <- V5_summary_of_cues_per_animal_use_cum %>% mutate(VF= "VF5")
+V6_summary_of_cues_per_animal_use_cum <- V6_summary_of_cues_per_animal_use_cum %>% mutate(VF= "VF6")
+
+
+V1_6_summary_of_cues_per_animal_use_cum <- rbind(
+  Av_of_cues_per_VFmob_use_cum,
+  VF1_Av_of_cues_per_VFmob_use_cum,
+  VF2_Av_of_cues_per_VFmob_use_cum,
+  VF3_Av_of_cues_per_VFmob_use_cum,
+  VF4_Av_of_cues_per_VFmob_use_cum,
+  V5_summary_of_cues_per_animal_use_cum,
+  V6_summary_of_cues_per_animal_use_cum
+)
+
+
+write_csv(V1_6_summary_of_cues_per_animal_use_cum,
+          "W:/VF/2024/animal behaviour data/Pinnaroo2022/data_for_plots/AllVF_1_6Av_of_cues_per_mob_use_cum.csv") 
