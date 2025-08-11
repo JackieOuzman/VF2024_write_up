@@ -60,7 +60,8 @@ Audio_LP <- high_cows_audio_summary %>%
   geom_line(aes(color=as.factor(animal)))+
   #geom_line()+
   theme_bw()+
-  theme(axis.text.x = element_text(angle = 90))+
+  theme(axis.text.x = element_text(angle = 90), legend.position = "none")+
+  ylim(0, 4000)+
   scale_x_date(date_breaks = "1 day", date_labels = "%d/%m")+
   geom_vline(data=VF_dates, mapping=aes(xintercept=date), color="Black",  size=1) +
   theme(axis.text.x=element_text(angle=90,hjust=1))+ 
@@ -73,7 +74,7 @@ Audio_LP <- high_cows_audio_summary %>%
 
 
 
-
+Audio_LP
 
 
 
