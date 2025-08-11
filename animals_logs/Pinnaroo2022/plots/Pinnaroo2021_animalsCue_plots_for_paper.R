@@ -32,7 +32,7 @@ summary_of_cues_per_animal_use_cum <- ungroup(summary_of_cues_per_animal_use_cum
 #summary_of_cues_per_animal_use_cum <- summary_of_cues_per_animal_use_cum %>% filter( date< "2020-11-04" )
 
 VF_dates=data.frame(date=as.Date(c("2022-07-22", "2022-07-25", "2022-07-26", "2022-07-27", "2022-07-29")), 
-                    event=c("VF1", "VF3", "VF4", "VF5", "VF6"))
+                                event=c("VF1",     "VF3",       "VF4",         "VF5",       "VF6"))
 
 
 #what are the cow with high values?
@@ -40,54 +40,38 @@ VF_dates=data.frame(date=as.Date(c("2022-07-22", "2022-07-25", "2022-07-26", "20
 summary(summary_of_cues_per_animal_use_cum$max_aduio)
 
  high_cows_audio_orginal <- summary_of_cues_per_animal_use_cum %>% 
-   filter(max_aduio > 500) %>%   distinct(animal)
+   filter(max_aduio > 1000) %>%   distinct(animal)
  high_cows_audio <- summary_of_cues_per_animal_use_cum %>% 
-   filter(max_aduio> 500) %>%   distinct(animal)
+   filter(max_aduio> 1500) %>%   distinct(animal)
 
 print(high_cows_audio)
 high_cows_audio_orginal
 
-high_cows_audio_summary <-  summary_of_cues_per_animal_use_cum # %>% 
-  # filter(animal %in% c(
-1390038
-
-1390063
-
-1390068
-1390103
-1390139
-1390171
-1390196
-1390221
-1390305
-1390310
-1390416
-1390495
-1390560
-1390577
-1390743
-1390749
-1390826
-1390858
-1390889
-1391200
-1391209
-1391211
-23
-1391234
-24
-1391339
-25
-1391502
-26
-1391517
-27
-1391796
-28
-1391842)) 
-  #   #%>% 
-  # #filter( date< "2020-11-04" )
-
+high_cows_audio_summary <-  summary_of_cues_per_animal_use_cum  %>% 
+   filter(animal %in% c(
+     "1390038",
+     "1390063",
+     "1390103",
+     "1390139",
+     "1390171",
+     "1390196",
+     "1390221",
+     "1390310",
+     "1390416",
+     "1390560",
+     "1390826",
+     "1390858",
+     "1390889",
+     "1391209",
+     "1391339",
+     "1391502",
+     "1391517",
+     "1391796"
+)) 
+   
+distinct(summary_of_cues_per_animal_use_cum, animal)
+distinct(high_cows_audio_summary, animal) 
+  
  high_cows_audio_summary_orginal <-  summary_of_cues_per_animal_use_cum #%>% 
 #   filter(animal %in% c(
 #     9370004,
@@ -138,13 +122,15 @@ high_cows_audio_summary <-  summary_of_cues_per_animal_use_cum # %>%
 
 
 ### Plot with audio (best option)
-
+ distinct(summary_of_cues_per_animal_use_cum, animal) # all animals
+ distinct(high_cows_audio_summary, animal) #subset of animals with high values
+ 
+ 
 Audio_LP <- 
   high_cows_audio_summary %>% 
   #high_cows_audio_summary_orginal %>% 
-  filter(animal != 9380384) %>% 
   ggplot( aes(x = date, y = max_aduio, group = as.factor(animal)))+
-  geom_line(data= summary_of_cues_per_animal_use_cum %>%  filter(animal != 9380384), 
+  geom_line(data= summary_of_cues_per_animal_use_cum, 
             aes(x = date, 
                 y = max_aduio, 
                 group = as.factor(animal)),
@@ -158,7 +144,8 @@ Audio_LP <-
   theme(axis.text.x = element_text(angle = 90))+
   scale_x_date(date_breaks = "1 day", date_labels = "%d/%m")+
   geom_vline(data=VF_dates, mapping=aes(xintercept=date), color="Black",  size=1) +
-  theme(axis.text.x=element_text(angle=90,hjust=1))+ 
+  theme(axis.text.x=element_text(angle=90,hjust=1),
+        legend.position = "none")+ 
   labs(title= "",
        x= "",
        y = "Cummulative audio cues",col="Animal ID",)
@@ -175,9 +162,8 @@ Audio_LP
 ###Pulse 
 str(VF_no_control)
 
-VF_dates=data.frame(date=as.Date(c("2022-10-07", "2022-10-11", "2022-10-12", "2022-10-17")), 
-                    event=c("VF1", "VF2", "VF3", "VF4"))
-
+VF_dates=data.frame(date=as.Date(c("2022-07-22", "2022-07-25", "2022-07-26", "2022-07-27", "2022-07-29")), 
+                    event=c("VF1",     "VF3",       "VF4",         "VF5",       "VF6"))
 
 #what are the cow with high values?
 
@@ -189,18 +175,7 @@ high_cows_pulse
 
 high_cows_audio_summary <-  summary_of_cues_per_animal_use_cum %>% 
   filter(animal %in% c(
-    9370124,
-    9380265,
-    9380268,
-    9380310,
-    9380384, # flat
-    9380430,
-    9380455,
-    9380527,
-    9380572,
-    9380674,
-    9380743,
-    9380821
+   
     ))
   
 
@@ -243,7 +218,8 @@ Pulse_LP <- high_cows_audio_summary %>%
   theme(axis.text.x = element_text(angle = 90))+
   scale_x_date(date_breaks = "1 day", date_labels = "%d/%m")+
   geom_vline(data=VF_dates, mapping=aes(xintercept=date), color="Black",  size=1) +
-  theme(axis.text.x=element_text(angle=90,hjust=1))+ 
+  theme(axis.text.x=element_text(angle=90,hjust=1),
+        legend.position = "none")+ 
   labs(title= "",
        x= "",
        y = "Cummulative pulse cues",col="Animal ID",)
@@ -251,7 +227,7 @@ Pulse_LP
 
 ggsave(Pulse_LP,
        filename = "W:/VF/2024/animal behaviour data/Pinnaroo2022/data_for_plots/CumPulse_vsDays_byanimals_Pinnaroo2022.png", 
-       width = 15, height = 8, dpi = 600, units = "cm")
+       width = 15, height = 9, dpi = 600, units = "cm")
 
 Audio_LP
 ggsave(Audio_LP,
