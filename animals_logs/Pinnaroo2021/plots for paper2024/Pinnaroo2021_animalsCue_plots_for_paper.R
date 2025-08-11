@@ -131,7 +131,7 @@ Audio_LP <-
   theme(axis.text.x = element_text(angle = 90))+
   scale_x_date(date_breaks = "1 day", date_labels = "%d/%m")+
   geom_vline(data=VF_dates, mapping=aes(xintercept=date), color="Black",  size=1) +
-  theme(axis.text.x=element_text(angle=90,hjust=1))+ 
+  theme(axis.text.x=element_text(angle=90,hjust=1), legend.position = "none")+ 
   labs(title= "",
        x= "",
        y = "Cummulative audio cues",col="Animal ID",)
