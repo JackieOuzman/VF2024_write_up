@@ -1,6 +1,8 @@
 library(tidyverse)
 library(readxl)
 library(car)
+#install.packages("dunn.test")
+library(dunn.test)
 
 ### LP pasture assessments 
 # I have only created a biomass map for post trial, we dont have biomass cut for the pre trial.
@@ -13,6 +15,7 @@ library(car)
 
 
 LP_biomass_post_trail <- read.csv("W:/VF/2024/pasture assessments/LP_biomass_grids/LP_Biomass_post_frm_phen.csv")
+LP_LAI_post_trail <- read.csv("W:/VF/2024/pasture assessments/LP_biomass_grids/LP_LAI_post_2.csv")
 
 Pinnaroo_2021_biomass_post_trail <- read.csv("W:/VF/2024/pasture assessments/Pinnaroo_2021/Pin2021_Bimass_post_from_dist__join.csv")
 
@@ -48,6 +51,37 @@ Pinnaroo_2022_biomass_post_trail <- Pinnaroo_2022_biomass_post_trail %>% select(
 str(Pinnaroo_2022_biomass_post_trail)
 
 #################################################################################
+names(LP_biomass_post_trail)
+summary_LP_data <- LP_biomass_post_trail %>% group_by(VF_name) %>% 
+   summarize(
+    mean_value = mean(biomass, na.rm = TRUE),
+    median_value = median(biomass, na.rm = TRUE),
+    sd_value = sd(biomass, na.rm = TRUE),
+    count = n()
+  )
+summary_LP_data
+
+names(Pinnaroo_2021_biomass_post_trail)
+summary_Pin2021_data <- Pinnaroo_2021_biomass_post_trail %>% group_by(VF_name) %>% 
+  summarize(
+    mean_value = mean(biomass, na.rm = TRUE),
+    median_value = median(biomass, na.rm = TRUE),
+    sd_value = sd(biomass, na.rm = TRUE),
+    count = n()
+  )
+summary_Pin2021_data
+
+names(Pinnaroo_2022_biomass_post_trail)
+summary_Pin2022_data <- Pinnaroo_2022_biomass_post_trail %>% group_by(VF_name) %>% 
+  summarize(
+    mean_value = mean(biomass, na.rm = TRUE),
+    median_value = median(biomass, na.rm = TRUE),
+    sd_value = sd(biomass, na.rm = TRUE),
+    count = n()
+  )
+summary_Pin2022_data
+
+#################################################################################
 
 # ANOVA
 
@@ -76,6 +110,16 @@ leveneTest(biomass ~ VF_name , data = LP_biomass_post_trail)
 
 kruskal.test(biomass ~ VF_name , data = LP_biomass_post_trail)
 
+#### POST HOC ANALYSIS 
+
+################################################################################
+# Kruskal-Wallis test
+kruskal.test(biomass ~ VF_name, data = LP_biomass_post_trail)
+
+# Dunn's test for post hoc comparisons
+dunn.test(LP_biomass_post_trail$biomass, LP_biomass_post_trail$VF_name, method = "bonferroni")
+
+################################################################################
 
 # Averages
 Summary_LP_biomass_post_trail <- LP_biomass_post_trail %>%
@@ -85,6 +129,35 @@ Summary_LP_biomass_post_trail <- LP_biomass_post_trail %>%
             Biomass_SE =    Biomass_SD / sqrt(n()))
 
 Summary_LP_biomass_post_trail
+
+
+###################################################################################
+## Dana suggested that the LAI might show differences 
+
+names(LP_LAI_post_trail)
+
+
+# Averages
+Summary_LP_LAI_post_trail <- LP_LAI_post_trail %>%
+  group_by(VF_name)%>%
+  summarise(mean_LAI =  mean(grid_code, na.rm = TRUE),
+            LAI_SD =    sd(grid_code, na.rm = TRUE),
+            LAI_SE =    LAI_SD / sqrt(n()))
+
+Summary_LP_LAI_post_trail
+
+### do we have equal variance?
+leveneTest(grid_code ~ VF_name , data = LP_LAI_post_trail)
+#From the output above we can see that the p-value IS less than the significance level of 0.05. 
+#This means that there IS evidence to suggest that the variance across groups is statistically significantly different. 
+#Therefore, we can't assume the homogeneity of variances in the different treatment groups.
+# not equal variance
+
+# Kruskal-Wallis test
+kruskal.test(grid_code ~ VF_name, data = LP_LAI_post_trail)
+
+# Dunn's test for post hoc comparisons
+dunn.test(LP_LAI_post_trail$grid_code, LP_LAI_post_trail$VF_name, method = "bonferroni")
 
 
 
@@ -120,9 +193,13 @@ Summary_Pinnaroo_2021_biomass_post_trail <- Pinnaroo_2021_biomass_post_trail %>%
   group_by(VF_name)%>%
   summarise(mean_Biomass =  mean(biomass, na.rm = TRUE),
             Biomass_SD =    sd(biomass, na.rm = TRUE),
-            Biomass_SE =    Biomass_SD / sqrt(n()))
+            Biomass_SE =    Biomass_SD / sqrt(n()),
+            count = n())
 
 Summary_Pinnaroo_2021_biomass_post_trail
+
+
+
 
 
 
@@ -151,6 +228,9 @@ leveneTest(biomass ~ VF_name , data = Pinnaroo_2022_biomass_post_trail)
 # Non-parametric alternative to one-way ANOVA test
 
 kruskal.test(biomass ~ VF_name , data = Pinnaroo_2022_biomass_post_trail)
+
+# Dunn's test for post hoc comparisons
+dunn.test(Pinnaroo_2022_biomass_post_trail$biomass, Pinnaroo_2022_biomass_post_trail$VF_name, method = "bonferroni")
 
 # Averages
 Summary_Pinnaroo_2022_biomass_post_trail <- Pinnaroo_2022_biomass_post_trail %>%
