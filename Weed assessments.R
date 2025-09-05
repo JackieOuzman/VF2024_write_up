@@ -17,6 +17,48 @@ Pin_2021 <- weed_pre_post_trial %>% filter(Site == "Pinnaroo 2021")
 Pin_2022 <- weed_pre_post_trial %>% filter(Site == "Pinnaroo 2022")
 
 
+###############################################################################
+### descriptive stats
+###############################################################################
+DS_LP_timing_VF <- LP %>% 
+  group_by(Timing, VF_name )%>%
+  #group_by( Timing)%>%
+  summarize(
+    mean_value = mean(Total_weed_count, na.rm = TRUE),
+    median_value = median(Total_weed_count, na.rm = TRUE),
+    sd_value = sd(Total_weed_count, na.rm = TRUE),
+    count = n() # Count of observations in each group
+  )
+
+DS_LP_timing
+DS_LP_timing_VF
+
+names(Pin_2021)
+str(Pin_2021)
+
+DS_Pin2021_timing <- Pin_2021 %>% 
+  group_by( Timing)%>%
+  summarize(
+    mean_value = mean(Brome plants, na.rm = TRUE),
+    median_value = median(Brome plants, na.rm = TRUE),
+    sd_value = sd(Brome plants, na.rm = TRUE),
+    count = n() # Count of observations in each group
+  )
+
+DS_Pin2021_timing_VF <- Pin_2021 %>% 
+  group_by(Timing, VF_name )%>%
+ 
+  summarize(
+    mean_value = mean(Brome plants, na.rm = TRUE),
+    median_value = median(Brome plants, na.rm = TRUE),
+    sd_value = sd(Brome plants, na.rm = TRUE),
+    count = n() # Count of observations in each group
+  )
+
+DS_Pin2021_timing
+DS_Pin2021_timing_VF
+
+
 
 
 
@@ -26,6 +68,8 @@ Pin_2022 <- weed_pre_post_trial %>% filter(Site == "Pinnaroo 2022")
 ###############################################################################
 ## TOTAL WEED COUNT
 ###############################################################################
+
+
 
 # Averages total weed counts # before the trial LONG PLAIN
 LP_Summary_total_weed_count_pre_trial <- LP %>%
