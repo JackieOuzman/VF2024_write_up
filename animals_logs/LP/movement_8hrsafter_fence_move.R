@@ -10,128 +10,166 @@ library(sf)
 
 ### Retain data that is for start of fence move and then for 8 hours...
 
-VF_all <-  readRDS("W:/VF/2024/animal behaviour data/Pinnaroo2022/data_for_plots/Pinnaroo2022_all_data.rds") 
+VF_all <-  readRDS("W:/VF/2024/animal behaviour data/Long Plain/data_for_plots/LP_all_data.rds") 
 VF_no_control <- VF_all %>% filter(VF != "VFControl")
 
 
 names(VF_all)
 str(VF_all)
-VF_all %>% distinct(VF) 
+VF_no_control %>% distinct(VF) 
 
 ################################################################################
-VF1_trimmed_DOY201 <- VF_all %>%
+VF1_trimmed_DOY <- VF_no_control %>%
   filter(VF == "VF1") %>%
-  filter(DOY == "201") %>% 
+  #filter(DOY == "201") %>% 
   filter(local_time >= min(local_time, na.rm = TRUE) & 
            local_time <= min(local_time, na.rm = TRUE) + 8 * 60 * 60) 
   
+VF1_trimmed_DOY %>% distinct(DOY)
 
-VF1_trimmed_DOY201_sf <- VF1_trimmed_DOY201 %>%
+VF1_trimmed_DOY_sf <- VF1_trimmed_DOY %>%
   st_as_sf(coords = c("X", "Y"), crs = 28354)  # Adjust column names and CRS as needed
 
 # Save as shapefile
-st_write(VF1_trimmed_DOY201_sf, "W:/VF/2024/animal behaviour data/Pinnaroo2022/data_for_plots/fence_move_8hrs/VF1_trimmed_DOY201_sf.shp")
+st_write(VF1_trimmed_DOY_sf, "W:/VF/2024/animal behaviour data/Long Plain/data_for_plots/fence_move_8hrs/VF1_trimmed_DOY_sf_XY.shp")
+
+
 
 ################################################################################
-
-VF2_trimmed_DOY <- VF_all %>%
+VF2_trimmed_DOY <- VF_no_control %>%
   filter(VF == "VF2") %>%
-  #filter(DOY == "202") %>% 
+  
   filter(local_time >= min(local_time, na.rm = TRUE) & 
            local_time <= min(local_time, na.rm = TRUE) + 8 * 60 * 60) 
 
-VF2_trimmed_DOY %>% distinct(DOY) #this is DOY 203
+VF2_trimmed_DOY %>% distinct(DOY)
+
 VF2_trimmed_DOY_sf <- VF2_trimmed_DOY %>%
   st_as_sf(coords = c("X", "Y"), crs = 28354)  # Adjust column names and CRS as needed
 
 # Save as shapefile
-st_write(VF2_trimmed_DOY_sf, "W:/VF/2024/animal behaviour data/Pinnaroo2022/data_for_plots/fence_move_8hrs/VF2_trimmed_DOY_sf.shp")
-
-################################################################################
-
-VFX_trimmed_DOY202 <- VF_all %>%
-  #filter(VF == "VF2") %>%
-  filter(DOY == "202") %>% 
-  filter(local_time >= min(local_time, na.rm = TRUE) & 
-           local_time <= min(local_time, na.rm = TRUE) + 8 * 60 * 60) 
-
-VFX_trimmed_DOY202 %>% distinct(VF) #this is DOY 202 and VF1
-VFX_trimmed_DOY202_sf <- VFX_trimmed_DOY202 %>%
-  st_as_sf(coords = c("X", "Y"), crs = 28354)  # Adjust column names and CRS as needed
-
-# Save as shapefile
-st_write(VFX_trimmed_DOY202_sf, "W:/VF/2024/animal behaviour data/Pinnaroo2022/data_for_plots/fence_move_8hrs/VFX_trimmed_DOY202_sf.shp")
+st_write(VF2_trimmed_DOY_sf, "W:/VF/2024/animal behaviour data/Long Plain/data_for_plots/fence_move_8hrs/VF2_trimmed_DOY_sf.shp")
 
 
 
 ################################################################################
-
-VF3_trimmed_DOY203 <- VF_all %>%
+VF3_trimmed_DOY <- VF_no_control %>%
   filter(VF == "VF3") %>%
-  filter(DOY == "203") %>% 
+  
   filter(local_time >= min(local_time, na.rm = TRUE) & 
            local_time <= min(local_time, na.rm = TRUE) + 8 * 60 * 60) 
 
-VF3_trimmed_DOY203 %>% distinct(DOY) #this is DOY 203
-VF3_trimmed_DOY203 %>% distinct(VF) #this is DOY 203
+VF3_trimmed_DOY %>% distinct(DOY)
 
-VF3_trimmed_DOY_sf <- VF3_trimmed_DOY203 %>%
+VF3_trimmed_DOY_sf <- VF3_trimmed_DOY %>%
   st_as_sf(coords = c("X", "Y"), crs = 28354)  # Adjust column names and CRS as needed
 
 # Save as shapefile
-st_write(VF3_trimmed_DOY_sf, "W:/VF/2024/animal behaviour data/Pinnaroo2022/data_for_plots/fence_move_8hrs/VF3_trimmed_DOY203_sf.shp")
+st_write(VF3_trimmed_DOY_sf, "W:/VF/2024/animal behaviour data/Long Plain/data_for_plots/fence_move_8hrs/VF3_trimmed_DOY_sf.shp")
+
 
 ################################################################################
-
-
-
-VF4_trimmed_DOY206 <- VF_all %>%
+VF4_trimmed_DOY <- VF_no_control %>%
   filter(VF == "VF4") %>%
-  #filter(DOY == "205") %>% 
+  
   filter(local_time >= min(local_time, na.rm = TRUE) & 
            local_time <= min(local_time, na.rm = TRUE) + 8 * 60 * 60) 
 
-VF4_trimmed_DOY206 %>% distinct(DOY) #this is DOY 206
-VF4_trimmed_DOY206 %>% distinct(VF) #this is VF4
+VF4_trimmed_DOY %>% distinct(DOY)
 
-VF4_trimmed_DOY206_sf <- VF4_trimmed_DOY206 %>%
+VF4_trimmed_DOY_sf <- VF4_trimmed_DOY %>%
   st_as_sf(coords = c("X", "Y"), crs = 28354)  # Adjust column names and CRS as needed
 
 # Save as shapefile
-st_write(VF4_trimmed_DOY206_sf, "W:/VF/2024/animal behaviour data/Pinnaroo2022/data_for_plots/fence_move_8hrs/VF4_trimmed_DOY206_sf.shp")
-
-################################################################################
+st_write(VF4_trimmed_DOY_sf, "W:/VF/2024/animal behaviour data/Long Plain/data_for_plots/fence_move_8hrs/VF4_trimmed_DOY_sf.shp")
 
 
-VF5_trimmed_DOY207 <- VF_all %>%
-  filter(VF == "VF5") %>%
-  #filter(DOY == "205") %>% 
-  filter(local_time >= min(local_time, na.rm = TRUE) & 
-           local_time <= min(local_time, na.rm = TRUE) + 8 * 60 * 60) 
 
-VF5_trimmed_DOY207 %>% distinct(DOY) #this is DOY 207
-VF5_trimmed_DOY207 %>% distinct(VF) #this is VF5
 
-VF5_trimmed_DOY207_sf <- VF5_trimmed_DOY207 %>%
+
+#################################################################################
+### Control with filter time as above ##############
+control <- VF_all %>% filter(VF == "VFControl")
+
+####VF1
+
+time_bounds_VF1 <- VF_no_control %>%
+  filter(VF == "VF1") %>%
+  summarise(
+    min_time = min(local_time, na.rm = TRUE),
+    max_time = min(local_time, na.rm = TRUE) + 8 * 60 * 60
+  )
+
+# Apply the same time period to another dataframe
+control_VF1 <- control %>%
+  filter(local_time >= time_bounds_VF1$min_time & 
+           local_time <= time_bounds_VF1$max_time)
+
+control_VF1_sf <- control_VF1 %>%
   st_as_sf(coords = c("X", "Y"), crs = 28354)  # Adjust column names and CRS as needed
 
 # Save as shapefile
-st_write(VF5_trimmed_DOY207_sf, "W:/VF/2024/animal behaviour data/Pinnaroo2022/data_for_plots/fence_move_8hrs/VF5_trimmed_DOY207_sf.shp")
+st_write(control_VF1_sf, "W:/VF/2024/animal behaviour data/Long Plain/data_for_plots/fence_move_8hrs/control_VF1_sf.shp")
 
-################################################################################
-VF6_trimmed_DOY208 <- VF_all %>%
-  filter(VF == "VF6") %>%
-  #filter(DOY == "205") %>% 
-  filter(local_time >= min(local_time, na.rm = TRUE) & 
-           local_time <= min(local_time, na.rm = TRUE) + 8 * 60 * 60) 
 
-VF6_trimmed_DOY208 %>% distinct(DOY) #this is DOY 208
-VF6_trimmed_DOY208 %>% distinct(VF) #this is VF6
+####VF2
 
-VF6_trimmed_DOY208_sf <- VF6_trimmed_DOY208 %>%
+time_bounds_VF2 <- VF_no_control %>%
+  filter(VF == "VF2") %>%
+  summarise(
+    min_time = min(local_time, na.rm = TRUE),
+    max_time = min(local_time, na.rm = TRUE) + 8 * 60 * 60
+  )
+
+# Apply the same time period to another dataframe
+control_VF2 <- control %>%
+  filter(local_time >= time_bounds_VF2$min_time & 
+           local_time <= time_bounds_VF2$max_time)
+
+control_VF2_sf <- control_VF2 %>%
   st_as_sf(coords = c("X", "Y"), crs = 28354)  # Adjust column names and CRS as needed
 
 # Save as shapefile
-st_write(VF6_trimmed_DOY208_sf, "W:/VF/2024/animal behaviour data/Pinnaroo2022/data_for_plots/fence_move_8hrs/VF6_trimmed_DOY208_sf.shp")
+st_write(control_VF2_sf, "W:/VF/2024/animal behaviour data/Long Plain/data_for_plots/fence_move_8hrs/control_VF2_sf.shp")
 
-################################################################################
+
+####VF3
+
+time_bounds_VF3 <- VF_no_control %>%
+  filter(VF == "VF3") %>%
+  summarise(
+    min_time = min(local_time, na.rm = TRUE),
+    max_time = min(local_time, na.rm = TRUE) + 8 * 60 * 60
+  )
+
+# Apply the same time period to another dataframe
+control_VF3 <- control %>%
+  filter(local_time >= time_bounds_VF3$min_time & 
+           local_time <= time_bounds_VF3$max_time)
+
+control_VF3_sf <- control_VF3 %>%
+  st_as_sf(coords = c("X", "Y"), crs = 28354)  # Adjust column names and CRS as needed
+
+# Save as shapefile
+st_write(control_VF3_sf, "W:/VF/2024/animal behaviour data/Long Plain/data_for_plots/fence_move_8hrs/control_VF3_sf.shp")
+
+####VF4
+
+time_bounds_VF4 <- VF_no_control %>%
+  filter(VF == "VF4") %>%
+  summarise(
+    min_time = min(local_time, na.rm = TRUE),
+    max_time = min(local_time, na.rm = TRUE) + 8 * 60 * 60
+  )
+
+# Apply the same time period to another dataframe
+control_VF4 <- control %>%
+  filter(local_time >= time_bounds_VF4$min_time & 
+           local_time <= time_bounds_VF4$max_time)
+
+control_VF4_sf <- control_VF4 %>%
+  st_as_sf(coords = c("X", "Y"), crs = 28354)  # Adjust column names and CRS as needed
+
+# Save as shapefile
+st_write(control_VF4_sf, "W:/VF/2024/animal behaviour data/Long Plain/data_for_plots/fence_move_8hrs/control_VF4_sf.shp")
+
