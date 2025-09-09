@@ -45,7 +45,9 @@ VF2_trimmed_DOY_sf <- VF2_trimmed_DOY %>%
   st_as_sf(coords = c("X", "Y"), crs = 28354)  # Adjust column names and CRS as needed
 
 # Save as shapefile
-st_write(VF2_trimmed_DOY_sf, "W:/VF/2024/animal behaviour data/Pinnaroo2022/data_for_plots/fence_move_8hrs/VF2_trimmed_DOY_sf.shp")
+st_write(VF2_trimmed_DOY_sf, "W:/VF/2024/animal behaviour data/Pinnaroo2022/data_for_plots/fence_move_8hrs/VF2_trimmed_sf.shp")
+
+
 
 ################################################################################
 
@@ -269,4 +271,12 @@ control_VF6_sf <- control_VF6 %>%
 
 # Save as shapefile
 st_write(control_VF6_sf, "W:/VF/2024/animal behaviour data/Pinnaroo2022/data_for_plots/fence_move_8hrs/control_VF6_sf.shp")
+
+
+
+
+################################################################################
+
+##Fence 2 is a total mess
+
 

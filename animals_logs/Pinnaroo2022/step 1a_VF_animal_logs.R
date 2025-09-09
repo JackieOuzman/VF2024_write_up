@@ -261,6 +261,8 @@ VF2 <- filter(VF_animal_GPS_data,
 
 #VF2 <- VF2 %>% filter(VF_Fence != "VP02") #(not sure I can do this what about the NA)
 VF2 <- VF2 %>% filter(fencesID == "1a2b9") #(not sure I can do this what about the NA)
+#what does this look like without filter time?
+VF2_1a2b9 <- VF_animal_GPS_data %>% filter(fencesID == "1a2b9")
 
 min(VF2$local_time)
 max(VF2$local_time)
@@ -529,6 +531,23 @@ check_sf <-
            crs = 28354, #
            agr = "constant")
 
+VF2_1a2b9_sf <- st_as_sf(VF2_1a2b9,
+                      coords = c("xcoord", "ycoord"),
+                      crs = 28354, #
+                      agr = "constant")
+#what is the min and max time for this VF2_1a2b9_sf
+str(VF2_1a2b9_sf)
+min(VF2_1a2b9_sf$local_time) #2022-07-22 11:53:00
+max(VF2_1a2b9_sf$local_time) #"2022-07-22 13:13:00 ACST"
+
+str(check_sf)
+
+check_sf %>% filter(VF_Fence ==  "fence2") %>% 
+  group_by() %>% 
+  summarise(min_local_time = min(local_time), #2022-07-22 12:23:00
+            max_local_time = max(local_time)) #2022-07-22 12:43:00
+
+
 
 
 ggplot() +
@@ -536,16 +555,17 @@ ggplot() +
   #geom_sf(data = VF_fence_VF1, color = "blue", fill = NA) +
   #geom_sf(data = VF_fence_VF2, color = "red", fill = NA) +
   #geom_sf(data = VF_fence_VF3, color = "green", fill = NA) + # 
-  #geom_sf(data = VF_fence_VF4, color = "blue", fill = NA) + # 
+  geom_sf(data = VF_fence_VF4, color = "blue", fill = NA) + # 
   #geom_sf(data = VF_fence_VF5, color = "red", fill = NA) + # 
-  geom_sf(data = VF_fence_VF6, color = "green", fill = NA) + # 
+  #geom_sf(data = VF_fence_VF6, color = "green", fill = NA) + # 
   
   #geom_sf(data = filter(check_sf, VF_Fence ==  "fence1"),alpha = 0.03) +
-  #geom_sf(data = filter(check_sf, VF_Fence ==  "fence2"),alpha = 0.03) +
+  #geom_sf(data = filter(check_sf, VF_Fence ==  "fence2"),color ="black", size= 5) +
+  #geom_sf(data = filter(VF2_1a2b9_sf),color ="red", size= 2) +
   #geom_sf(data = filter(check_sf, VF_Fence ==  "fence3"),alpha = 0.03) +
-  #geom_sf(data = filter(check_sf, VF_Fence ==  "fence4"),alpha = 0.03) +
+  geom_sf(data = filter(check_sf, VF_Fence ==  "fence4"),alpha = 0.03) +
   #geom_sf(data = filter(check_sf, VF_Fence ==  "fence5"),alpha = 0.03) +
-  geom_sf(data = filter(check_sf, VF_Fence ==  "fence6"),alpha = 0.03) +
+  #geom_sf(data = filter(check_sf, VF_Fence ==  "fence6"),alpha = 0.03) +
   theme_bw()+
   facet_wrap(.~ date)+
   theme(legend.position = "none",
